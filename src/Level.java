@@ -355,9 +355,9 @@ public class Level {
             } else if (m.isDefeated()) {
                 System.out.println("Spieler gewinnt!");
                 p.addMoreGold(m.getGold());
-                Inventory mInv = m.getInventory();
+                LinkedList mInv = m.getInventory();
                 for (int i = 0; i < mInv.length(); i++) {
-                	p.addToInventory(mInv.getItem(i));
+                	p.addToInventory((Item)mInv.getItem(i));
                 }
                 break;
             }
@@ -389,7 +389,7 @@ public class Level {
 
 	public void showInventory(Player p) {
 		inventoryShown = true;
-		Inventory inv = p.getInventory();
+		LinkedList inv = p.getInventory();
 		System.out.println("Dein Inventar umfasst: ");
 		for (int i = 0; i < inv.length(); i++) {
 			System.out.println(i + ".) " + inv.getItem(i));
@@ -401,7 +401,7 @@ public class Level {
 			System.out.println("Sorry, Item existiert nicht.");
 			return;
 		}
-		p.setCurrentItem(p.getInventory().getItem(index));
+		p.setCurrentItem((Item)p.getInventory().getItem(index));
 	}
 
 }

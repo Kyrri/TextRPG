@@ -11,7 +11,7 @@ public class Character {
 	/** The Hit chance. */
 	private double			hitChance;
 
-	private Inventory		inventory;
+	private LinkedList		inventory;
 	
 	private Item currentItem;
 
@@ -32,7 +32,7 @@ public class Character {
 		this.hitChance = hitChance;
 		this.gold = gold;
 		this.currentItem = null;
-		this.inventory = new Inventory();
+		this.inventory = new LinkedList();
 	}
 
 	public int getGold() { // THIS IS NEWLY ADDED SO DON'T RE-ADD IT
@@ -134,7 +134,7 @@ public class Character {
 		}
 	}
 
-	public Inventory getInventory() {
+	public LinkedList getInventory() {
 		return inventory;
 	}
 
@@ -144,7 +144,7 @@ public class Character {
 
 	public Item getItem(String name) {
 		for (int i = 0; i < inventory.length(); i++) {
-			Item it = inventory.getItem(i);
+			Item it = (Item)inventory.getItem(i);
 			if (it.getName().equals(name)) { return it; }
 		}
 		return null;
