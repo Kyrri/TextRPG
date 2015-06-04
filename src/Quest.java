@@ -13,6 +13,15 @@ public class Quest implements Comparable{
         this.Questgegenstand = item;
         this.Anzahl = quantity;
     }
+    public boolean isComplete(){
+        return this.Abgeschlossen;
+    }
+    public void setCompleted(){
+        this.Abgeschlossen = true;
+    }
+    public int getQuantity(){
+        return this.Anzahl;
+    }
 
 
     public String toString() {
@@ -21,6 +30,9 @@ public class Quest implements Comparable{
 
     public String getName() {
         return Namen;
+    }
+    public String getReqs(){
+        return Questgegenstand;
     }
     public boolean equals(Object obj) {
         if (!(obj instanceof Quest) || obj == null) { return false; }

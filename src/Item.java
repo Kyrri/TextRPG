@@ -71,6 +71,12 @@ public class Item implements Comparable {
 	}
 
 	public String getName() {
-		return Namen;
+		return this.Namen;
+	}
+	public int getValue(){
+	   return this.Verkaufswert;
+	}
+	public int getWeight(){
+	    return this.Gewicht;
 	}
 }

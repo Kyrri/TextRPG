@@ -13,6 +13,8 @@ public class Character {
 
 	private LinkedList		inventory;
 	
+	private LinkedList      questLog;
+	
 	private Item currentItem;
 
 	/** The constant ATTACK_NORMAL. */
@@ -33,9 +35,10 @@ public class Character {
 		this.gold = gold;
 		this.currentItem = null;
 		this.inventory = new LinkedList();
+		this.questLog = new LinkedList();
 	}
 
-	public int getGold() { // THIS IS NEWLY ADDED SO DON'T RE-ADD IT
+	public int getGold() { 
 		return this.gold;
 	}
 
@@ -133,13 +136,16 @@ public class Character {
 			return -1;
 		}
 	}
-
+	//Inventory methods
 	public LinkedList getInventory() {
 		return inventory;
 	}
 
 	public void addToInventory(Item i) {
-		inventory.append(i);
+		inventory.insert(i);
+	}
+	public void deleteFromInventory(Item i){
+	    inventory.delete(i);
 	}
 
 	public Item getItem(String name) {
@@ -156,5 +162,29 @@ public class Character {
 	
 	public void setCurrentItem(Item i) {
 		currentItem = i;
+	}
+	
+	//Questlog methods
+	public LinkedList getQuests(){
+	    return questLog;
+	}
+	public int getActiveQuests(){
+	    return questLog.length();
+	}
+	public void addToQuests(Quest i){
+	    questLog.append(i);
+	}
+	public int checkQuest(){
+	   int[] finishedQuest = this.questLog.checkQuest(inventory);
+	   if(finishedQuest[0]==-1){
+	       return 0;
+	   }
+	   else{
+	       Item compare = (Item)inventory.getItem(finishedQuest[0]);
+	       for(int i = 0; i< finishedQuest[1]; i++){
+	          inventory.delete(compare);
+	       }
+	       return 1;
+	   }
 	}
 }

@@ -133,7 +133,11 @@ public class RecursiveBacktracker implements MazeGenerator {
                     if (neighbors >= 3) {
                         maze[i][j] = BATTLECHAR;
                     } else if (neighbors == 1) {
-                        if (r.nextDouble() > 0.5) {
+                        double n = r.nextDouble();
+                        if(n > 0.75){
+                            maze[i][j] = QUESTGIVERCHAR;
+                        }
+                        else if (n > 0.5) {
                             maze[i][j] = WELLCHAR;
                         } else {
                             maze[i][j] = SMITHYCHAR;

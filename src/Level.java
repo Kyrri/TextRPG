@@ -21,12 +21,18 @@ public class Level {
 	public static final char	GOAL		= 'Z';
 	/** The constant START. */
 	public static final char	START		= 'S';
+	/** The constant QUESTGIVER. */
+	public static final char    QUESTGIVER  = 'Q';
 	/** The Player x coordinate. */
 	private int					playerX;
 	/** The Player y coordinate. */
 	private int					playerY;
 
 	private boolean				inventoryShown;
+	private final int           TOTALQUESTS;
+	private int                 completedQuests;
+	private boolean             canExit;
+	
 
 	/** Instantiates a new Level.
 	 *
@@ -36,6 +42,9 @@ public class Level {
 		this.mapData = mapData;
 		if (!findStart()) { throw new IllegalArgumentException("Invalid Map Data: No starting position"); }
 		inventoryShown = false;
+		TOTALQUESTS = 1; //read in quests, base number on that
+		completedQuests = 0;
+		canExit = false;
 	}
 
 	/** Find start.
@@ -94,6 +103,9 @@ public class Level {
 	public boolean showInventory(char c) {
 		return c == 'i';
 	}
+	public boolean showQuests(char c){
+	    return c == 'l';
+	}
 
 	/** Move void.
 	 *
@@ -126,7 +138,7 @@ public class Level {
 				&& (y < mapData.length)
 				&& (x < mapData[0].length)
 				&& (mapData[y][x] == PLAIN || mapData[y][x] == FOUNTAIN || mapData[y][x] == SMITHY
-						|| mapData[y][x] == BATTLE || mapData[y][x] == GOAL || mapData[y][x] == START);
+						|| mapData[y][x] == BATTLE || mapData[y][x] == GOAL || mapData[y][x] == START || mapData[y][x] == QUESTGIVER);
 	}
 
 	/** Can move up.
@@ -202,6 +214,7 @@ public class Level {
 		}
 		System.out.println("------------------------------");
 		System.out.println("i -> Zeige Inventar");
+		System.out.println("l -> Questlog");
 		System.out.print("Richtung? ");
 	}
 
@@ -230,6 +243,26 @@ public class Level {
 				p.setAtk(p.getAtk() + ATKBONUS);
 				System.out.printf("Die ATK des Spielers wurde um %d erhöht.%n", ATKBONUS);
 			break;
+			case Level.QUESTGIVER: //THIS SHOULD CHOOSE A QUEST FROM FILE AND CHECK BASED ON THAT QUEST
+			   if(completedQuests<TOTALQUESTS){
+			       this.completedQuests+= p.checkQuest(); 
+			   }
+			   if(completedQuests>=TOTALQUESTS){
+			       System.out.println("You have Completed all the quests - You May Now Exit the Level at Z");//should be in German
+			       canExit = true;
+			   }
+			   else{
+			      if(p.getActiveQuests()>=TOTALQUESTS){
+			          System.out.println("You have all avaliable quests - complete them to continue");
+			      }
+			      else{
+			          Quest q = new Quest("Luxury Pelts", "", "Pelz", 1);
+		                p.addToQuests(q);
+		                System.out.println("Neue Quest!");
+			          //grant new quest if it meets prereqs
+			      }
+			   }	    
+			break;
 			case Level.FOUNTAIN:
 				p.setHp(p.getMaxHp());
 				System.out.println("Spieler wurde vollständig geheilt!");
@@ -238,11 +271,16 @@ public class Level {
 				startBattle(p);
 			break;
 			case Level.GOAL:
-				System.out.println("Herzlichen Glückwunsch! Sie haben gewonnen!");
-				System.exit(0);
+			    if(canExit){
+			        System.out.println("Herzlichen Glückwunsch! Sie haben gewonnen!");
+	                System.exit(0); 
+			    }
+			    else{
+			        System.out.println("You must complete all the quests to Exit! Look for Q"); //should be in German
+			    }
 			break;
 		}
-		clearField();
+		    clearField(); 
 	}
 
 	/** Random monster.
@@ -386,13 +424,13 @@ public class Level {
             System.out.print(m);
         }
     }
-
+	//Inventory
 	public void showInventory(Player p) {
 		inventoryShown = true;
 		LinkedList inv = p.getInventory();
 		System.out.println("Dein Inventar umfasst: ");
 		for (int i = 0; i < inv.length(); i++) {
-			System.out.println(i + ".) " + inv.getItem(i));
+			System.out.println(i + ".) " + inv.printItem(i));
 		}
 	}
 
@@ -402,6 +440,14 @@ public class Level {
 			return;
 		}
 		p.setCurrentItem((Item)p.getInventory().getItem(index));
+	}
+	//Quests
+	public void showQuests(Player p){
+	    LinkedList quests = p.getQuests();
+	    System.out.println("Dein Quests umfasst: ");
+	    for (int i = 0; i < quests.length(); i++) {
+            System.out.println(i + ".) " +quests.printItem(i));
+        }
 	}
 
 }

@@ -22,7 +22,11 @@ public class Crawler {
 				char direction = input.charAt(0);
 				if (m.showInventory(direction)) {
 					m.showInventory(p);
-				} else if (!m.canMove(direction)) {
+				} 
+				else if(m.showQuests(direction)){
+				    m.showQuests(p);
+				}
+				else if (!m.canMove(direction)) {
 					System.out.println("Ungültige Richtung");
 				} else {
 					m.move(direction);
