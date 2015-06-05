@@ -187,4 +187,7 @@ public class Character {
 	       return 1;
 	   }
 	}
+	public boolean isQuestComplete(Object quest){
+	    return questLog.isInList(quest);
+	}
 }

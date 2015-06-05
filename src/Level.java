@@ -243,7 +243,7 @@ public class Level {
 				p.setAtk(p.getAtk() + ATKBONUS);
 				System.out.printf("Die ATK des Spielers wurde um %d erhöht.%n", ATKBONUS);
 			break;
-			case Level.QUESTGIVER: //THIS SHOULD CHOOSE A QUEST FROM FILE AND CHECK BASED ON THAT QUEST
+			case Level.QUESTGIVER: 
 			   if(completedQuests<TOTALQUESTS){
 			       this.completedQuests+= p.checkQuest(); 
 			   }
@@ -255,11 +255,23 @@ public class Level {
 			      if(p.getActiveQuests()>=TOTALQUESTS){
 			          System.out.println("You have all avaliable quests - complete them to continue");
 			      }
-			      else{
-			          Quest q = new Quest("Luxury Pelts", "", "Pelz", 1);
-		                p.addToQuests(q);
-		                System.out.println("Neue Quest!");
-			          //grant new quest if it meets prereqs
+			      else{           
+			          Quest q = new Quest("Luxury Pelts", "", "Pelz", 1); //add a single quest from file that hasn't been added, keep track of added quests so you don't readd
+			          if(q.getPreReqs().equals("") || q.getPreReqs().equals(null)){ //no Prereq
+			              p.addToQuests(q);
+	                      System.out.println("Neue Quest! "+ q.getName());
+	                      //increase quest tracking index?
+			          }
+			          else if(p.isQuestComplete(q)){ //check if Prereq is completed, if done
+			              p.addToQuests(q);
+                          System.out.println("Neue Quest! "+ q.getName());
+                          //increase quest tracking index?
+			          }
+			          else{
+			              System.out.println("You must finish '" + q.getPreReqs() + "' before getting a new quest.");
+			              //do not increase quest tracking index?
+			          }
+		               
 			      }
 			   }	    
 			break;

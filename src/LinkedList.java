@@ -25,9 +25,11 @@ public class LinkedList implements List{
                     return true;
                 } 
             }
-            else if(x instanceof Quest){
+            else if(x instanceof Quest){ //returns true if quest both exists and is complete
                 if(((Quest)current.getNext().getItem()).compareTo(temp.getItem())==0){
-                    return true;
+                    if(((Quest)current.getNext().getItem()).isComplete()){
+                        return true;
+                    }
                 }
             }
             current=current.getNext();
@@ -153,9 +155,14 @@ public class LinkedList implements List{
     public List delete(Object x){ //deletes first instance of specific item
         Node temp = new Node(x);
         Node current = this.firstItem;
-        
-            while(current.getNext() != null || current.getNext().getItem().equals(temp.getItem())){
-                current=current.getNext();
+        if(x instanceof Item){
+            while(current.getNext() != null){
+                if(current.getNext().getItem().equals(temp.getItem())){
+                    break;
+                }
+                else{
+                    current=current.getNext();
+                }
             }
             if(current.getNext().getItem().equals(temp.getItem())){
                 if(current.getNext().getQuantity()>1){
@@ -167,6 +174,7 @@ public class LinkedList implements List{
                     this.length--;
                 }
             }
+        }
         return this;
     }
     public List delete(){ //deletes first item in list
@@ -220,10 +228,8 @@ public class LinkedList implements List{
                 }
             }
         }
-        return i;
-        
+        return i;  
     }
-
     private class Node {
         
         Node next;

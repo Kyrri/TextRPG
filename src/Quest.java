@@ -34,6 +34,9 @@ public class Quest implements Comparable{
     public String getReqs(){
         return Questgegenstand;
     }
+    public String getPreReqs(){
+        return Vorquest;
+    }
     public boolean equals(Object obj) {
         if (!(obj instanceof Quest) || obj == null) { return false; }
         if (obj == this) { return true; }
