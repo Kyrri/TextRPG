@@ -148,7 +148,7 @@ public class Character {
 	public LinkedList getInventory() {
 		return inventory;
 	}
-
+	
 	public void addToInventory(Item i) {
 		inventory.insert(i);
 	}
@@ -163,7 +163,11 @@ public class Character {
 			if (it.getName().equals(name)) { return it; }
 		return null;
 	}
-	
+	/**
+	 * 
+	 * @param number des Items in der Liste
+	 * @return Item
+	 */
 	public Item getItem(int number) {
 			Item it = (Item)inventory.getItem(number);
             if(it != null){
@@ -171,7 +175,11 @@ public class Character {
             }
 		return null;
 	}
-	
+	/**
+	 * 
+	 * @param number des Items aus der Liste
+	 * @return Verkaufspreis des Händlers
+	 */
 	public int getVerkaufspreis(int number){
 			Item it = (Item)inventory.getItem(number);
 			if(it != null){
@@ -180,7 +188,11 @@ public class Character {
 			} 
 		return 0;
 	}
-	
+	/**
+	 * 
+	 * @param number des Items aus der Liste
+	 * @return Ankaufspreis eines Item für den Händler
+	 */
 	public int getAnkaufspreis(int number){
 			Item it = (Item)inventory.getItem(number);
 			if(it !=null){
@@ -189,7 +201,10 @@ public class Character {
 			}
 		return 0;
 	}
-	
+	/**
+	 * 
+	 * @param number des items aus der Liste
+	 */
 	public void deleteItem(int number){
 		Item it = (Item)inventory.getItem(number);
 			//System.out.println("Hier bin ich!!");
@@ -229,6 +244,11 @@ public class Character {
     public void addToQuests(Quest i){
         questLog.append(i);
     }
+    
+    /**
+     * 
+     *  
+     */
     public int checkQuest(){
        int[] finishedQuest = this.questLog.checkQuest(inventory);
        if(finishedQuest[0]==-1){

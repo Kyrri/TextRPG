@@ -1,5 +1,7 @@
 import java.util.Random;
 
+
+
 public class Item implements Comparable {
 	private int 	number = 0;
 	private String	Name;
@@ -8,6 +10,10 @@ public class Item implements Comparable {
 	private int 	Verkaufspreis;
 	private int 	Ankaufspreis;
 
+	/**
+	 * Konstruktoren 
+	 */
+	
 	public Item() {
 		Random rand = new Random();
 		int pickVals = rand.nextInt((((Level.possibleItems.length-1)-0)+1)+0);// random index from possibleNames, values and weights lists
@@ -15,7 +21,13 @@ public class Item implements Comparable {
 		this.Name = ((Item)Level.possibleItems[pickVals]).getName();
 		this.Wert = ((Item)Level.possibleItems[pickVals]).getWert();
 		this.Gewicht =((Item)Level.possibleItems[pickVals]).getWeight();
-	}		
+	}
+	/**
+	 * 
+	 * @param ratio 
+	 * Differzenz zwischen Ankaufspreis und Verkaufspreis für den Spieler
+	 * 
+	 */
 	public Item(int ratio) {
 		Random rand = new Random();
 		int pickVals = rand.nextInt((((Level.possibleItems.length-1)-0)+1)+0);// random index from possibleNames, values and weights lists
@@ -24,6 +36,11 @@ public class Item implements Comparable {
         this.Wert = ((Item)Level.possibleItems[pickVals]).getWert() + ratio;
         this.Gewicht =((Item)Level.possibleItems[pickVals]).getWeight();
 	}
+	/**
+	 * 
+	 * @param name des Händler TraderJoe oder TraderJeb
+	 * @param ratio Gewinnmarge des Händlers
+	 */
 	public Item(String name, int ratio){
 	    this.Name = name;
         int i =0;
@@ -33,6 +50,7 @@ public class Item implements Comparable {
         this.Wert = ((Item)Level.possibleItems[i]).getWert() + ratio;
         this.Gewicht = ((Item)Level.possibleItems[i]).getWeight();
 	}
+	
 	public Item(String name, int value, int weight) {
 		this.Name = name;
 		this.Wert = value;
@@ -47,7 +65,11 @@ public class Item implements Comparable {
         this.Wert = ((Item)Level.possibleItems[i]).getWert();
         this.Gewicht = ((Item)Level.possibleItems[i]).getWeight();
     }
-	
+	/**
+	 * 
+	 * @param curWert
+	 * Preisverfall des Gegenstandes nachdem der Spieler gekauft hat
+	 */
 	public void setWert(int curWert){
 		System.out.println(curWert);
 		this.Wert = curWert - 3;

@@ -63,9 +63,11 @@ public class Level {
 	private void readIn() throws IOException{
 	    System.out.println("Datei laden oder Standardwerte benutzen");
         
-        //Read in CSVs
+        /**
+         * Abfragen ob eingelesen werden soll
+         */
         int action = abfrage();
-        
+        // Einlesen des ITEM.CSV Files
         if(action == 1){
             int lineNumber = 0;
             BufferedReader br = Files.newBufferedReader(Paths.get("item.csv")); 
@@ -95,8 +97,9 @@ public class Level {
                     countItem++;
                 }
             }
-            possibleItems = temp.toArray(countItem);
             
+            possibleItems = temp.toArray(countItem);
+            // Einlesen des QUEST Files
             lineNumber = 0;
             countItem = 0;
             br = Files.newBufferedReader(Paths.get("quest.csv")); 
@@ -127,7 +130,10 @@ public class Level {
             TOTALQUESTS = possibleQuests.length;      
         }
 	}
-	
+	/**
+	 * 
+	 * @return gewünschte Option ob einlesen oder nicht einlesen
+	 */
 	private static int abfrage(){
         System.out.println("1 für Datei laden");
         System.out.println("2 für Standardwerte");
@@ -353,12 +359,12 @@ public class Level {
 	                   this.completedQuests+= p.checkQuest(); 
 	               }
 	               if(completedQuests>=TOTALQUESTS){
-	                   System.out.println("You have Completed all the quests - You May Now Exit the Level at Z");//should be in German
+	                   System.out.println("Alles Quests erfüllt, du darfst nun zum Zielfeld Z vorranschreiten");
 	                   canExit = true;
 	               }
 	               else{
 	                  if(p.getActiveQuests()>=TOTALQUESTS){
-	                      System.out.println("You have all avaliable quests - complete them to continue");
+	                      System.out.println("Du hast alle Quests im Log - schließe sie nun ab, um fortzufahren");
 	                  }
 	                  else{           
 	                      Quest q = (Quest)this.possibleQuests[questIndex];
@@ -377,7 +383,7 @@ public class Level {
                               }
 	                      }
 	                      else{
-	                          System.out.println("You must finish '" + q.getPreReqs() + "' before getting a new quest.");
+	                          System.out.println("Du musst zuerst die Bedingung '" + q.getPreReqs() + "' erfüllen.");
 	                      }
 	                       
 	                  }
@@ -399,7 +405,7 @@ public class Level {
                     System.exit(0); 
                 }
                 else{
-                    System.out.println("You must complete all the quests to Exit! Look for Q"); //should be in German
+                    System.out.println("Du musst zuerst alle Quests erfüllen, bevor du gewinnst"); 
                 }
 			break;
 		}

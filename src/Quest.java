@@ -13,9 +13,6 @@ public class Quest implements Comparable{
         this.Questgegenstand = item;
         this.Anzahl = quantity;
     }
-    public Quest() {
-		// TODO Auto-generated constructor stub
-	}
 	public boolean isComplete(){
         return this.Abgeschlossen;
     }

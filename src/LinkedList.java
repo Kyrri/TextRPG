@@ -227,7 +227,7 @@ public class LinkedList implements List{
                 if(index==-1){
                     compareQuantity = 0;
                 }
-                System.out.println(itemName + ": Req  -  " + quantity + ", Have -  " + compareQuantity);
+                System.out.println(itemName + ": Vorbedingung  -  " + quantity + ", Vorhanden -  " + compareQuantity);
                 if(compareQuantity>=quantity){
                     i[0] = index;
                     i[1] = quantity;
