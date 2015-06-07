@@ -139,7 +139,11 @@ public class RecursiveBacktracker implements MazeGenerator {
                     if (neighbors >= 3) {
                         maze[i][j] = BATTLECHAR;
                     } else if (neighbors == 1) {
-                        if (r.nextDouble() > 0.5) {
+                        double n = r.nextDouble();
+                        if(n > 0.7){
+                            maze[i][j] = QUESTGIVERCHAR;
+                        }
+                        else if (n > 0.4) {
                             maze[i][j] = WELLCHAR;
                         } else {
                                 
@@ -174,7 +178,7 @@ public class RecursiveBacktracker implements MazeGenerator {
         int starty = 2*r.nextInt(height/2)+1;
         maze = generate(startx, starty,  maze);
         maze[starty][startx] = STARTCHAR;
-        //maze = border(maze);
+        maze = border(maze);
         placeSpecialFields(maze);
         return maze;
     }
@@ -212,8 +216,8 @@ public class RecursiveBacktracker implements MazeGenerator {
      * @return the map as char [] []
      */
     private char[][] generate(int curX, int curY, char[][] maze) {
-    	maze[curY][curX] = MERCHANTCHAR;
-    	//maze[curY][curX] = FREECHAR;
+    	//maze[curY][curX] = MERCHANTCHAR;
+    	maze[curY][curX] = FREECHAR;
         int[] validPositions = new int[offsets.length];
         int validPositionCount = offsets.length;
         for (int i = 0; i < offsets.length; ++i) {

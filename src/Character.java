@@ -11,7 +11,8 @@ public class Character {
 	/** The Hit chance. */
 	private double			hitChance;
 	private int 			ratio;
-	private Inventory		inventory;
+	private LinkedList      inventory;
+	private LinkedList      questLog;
 	
 	private Item currentItem;
 	private String name;
@@ -33,17 +34,19 @@ public class Character {
 		this.hitChance = hitChance;
 		this.gold = gold;
 		this.currentItem = null;
-		this.inventory = new Inventory();
+		this.inventory = new LinkedList();
+        this.questLog = new LinkedList();
 	}
 	public Character(String name, int gold, int ratio){
 		this.setName(name);
 		this.gold = gold;
 		this.ratio = ratio;
-		this.inventory = new Inventory();
+		this.inventory = new LinkedList();
+        this.questLog = new LinkedList();
 		
 	}
 	
-	public int getGold() { // THIS IS NEWLY ADDED SO DON'T RE-ADD IT
+	public int getGold() {
 		return this.gold;
 	}
 
@@ -141,68 +144,58 @@ public class Character {
 			return -1;
 		}
 	}
-
-	public Inventory getInventory() {
+	//Inventory methods
+	public LinkedList getInventory() {
 		return inventory;
 	}
 
 	public void addToInventory(Item i) {
-		inventory.append(i);
+		inventory.insert(i);
 	}
 	
+	public void deleteFromInventory(Item i){
+        inventory.delete(i);
+    }
+	
 	public Item getItem(String name) {
-		for (int i = 0; i < inventory.length(); i++) {
-			Item it = inventory.getItem(i);
+	        int i = inventory.indexInList(name);
+			Item it = (Item)inventory.getItem(i);
 			if (it.getName().equals(name)) { return it; }
-		}
 		return null;
 	}
 	
 	public Item getItem(int number) {
-		for (int i = 0; i < inventory.length(); i++) {
-			Item it = inventory.getItem(i);
-			if (number == i) { return it; }
-		}
+			Item it = (Item)inventory.getItem(number);
+            if(it != null){
+                return it; 
+            }
 		return null;
 	}
 	
 	public int getVerkaufspreis(int number){
-		for (int i = 0; i < inventory.length(); i++) {
-			Item it = inventory.getItem(i);
-			if (number == i) { 
-				int preis = it.getVPreis();
-				return preis; 
-			}
-		}
+			Item it = (Item)inventory.getItem(number);
+			if(it != null){
+			    int preis = it.getVPreis();
+                return preis;  
+			} 
 		return 0;
 	}
 	
 	public int getAnkaufspreis(int number){
-		for (int i = 0; i < inventory.length(); i++) {
-			Item it = inventory.getItem(i);
-			if (number == i) { 
-				int preis = it.getAPreis();
-				return preis; 
+			Item it = (Item)inventory.getItem(number);
+			if(it !=null){
+			    int preis = it.getAPreis();
+                return preis;  
 			}
-		}
 		return 0;
 	}
 	
 	public void deleteItem(int number){
-		for (int i = 0; i < inventory.length(); i++) {
-			Item it = inventory.getItem(i);
+		Item it = (Item)inventory.getItem(number);
+			//System.out.println("Hier bin ich!!");
+			inventory.delete(it);
+			//System.out.println("Hier bin ich auch noch!!");
 			
-			if (number == i) {
-				//System.out.println("Hier bin ich!!");
-				inventory.delete(it);
-				//System.out.println("Hier bin ich auch noch!!");
-			}
-		}
-			
-	}
-	
-	public void addItem(Item it){
-		inventory.append(it);
 	}
 	
 	public void addMoreGold(int amount) {
@@ -219,11 +212,37 @@ public class Character {
 	}
 	
 	
-	
 	public String getName() {
 		return name;
 	}
 	public void setName(String name) {
 		this.name = name;
 	}
+	
+	//Questlog methods
+    public LinkedList getQuests(){
+        return questLog;
+    }
+    public int getActiveQuests(){
+        return questLog.length();
+    }
+    public void addToQuests(Quest i){
+        questLog.append(i);
+    }
+    public int checkQuest(){
+       int[] finishedQuest = this.questLog.checkQuest(inventory);
+       if(finishedQuest[0]==-1){
+           return 0;
+       }
+       else{
+           Item compare = (Item)inventory.getItem(finishedQuest[0]);
+           for(int i = 0; i< finishedQuest[1]; i++){
+              inventory.delete(compare);
+           }
+           return 1;
+       }
+    }
+    public boolean isQuestComplete(Object quest){
+        return questLog.isInList(quest);
+    }
 }

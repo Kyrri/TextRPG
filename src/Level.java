@@ -22,13 +22,18 @@ public class Level {
 	/** The constant START. */
 	public static final char	START		= 'S';
 	/** The constant Merchant*/
-	public static final char	MERCHANT		= 'H';
+	public static final char	MERCHANT	= 'H';
+	/** The constant QUESTGIVER. */
+    public static final char    QUESTGIVER  = 'Q';
 	/** The Player x coordinate. */
 	private int					playerX;
 	/** The Player y coordinate. */
 	private int					playerY;
 
 	private boolean				inventoryShown;
+	private final int           TOTALQUESTS;
+    private int                 completedQuests;
+    private boolean             canExit;
 
 	/** Instantiates a new Level.
 	 *
@@ -38,6 +43,9 @@ public class Level {
 		this.mapData = mapData;
 		if (!findStart()) { throw new IllegalArgumentException("Invalid Map Data: No starting position"); }
 		inventoryShown = false;
+		TOTALQUESTS = 1; //read in quests, base number on that
+        completedQuests = 0;
+        canExit = false;
 	}
 
 	/** Find start.
@@ -96,6 +104,9 @@ public class Level {
 	public boolean showInventory(char c) {
 		return c == 'i';
 	}
+	public boolean showQuests(char c){
+        return c == 'l';
+    }
 
 	/** Move void.
 	 *
@@ -128,7 +139,8 @@ public class Level {
 				&& (y < mapData.length)
 				&& (x < mapData[0].length)
 				&& (mapData[y][x] == PLAIN || mapData[y][x] == FOUNTAIN || mapData[y][x] == SMITHY
-						|| mapData[y][x] == BATTLE || mapData[y][x] == GOAL || mapData[y][x] == START || mapData[y][x] == MERCHANT);
+						|| mapData[y][x] == BATTLE || mapData[y][x] == GOAL || mapData[y][x] == START || mapData[y][x] == MERCHANT 
+						|| mapData[y][x] == QUESTGIVER);
 	}
 
 	/** Can move up.
@@ -204,6 +216,7 @@ public class Level {
 		}
 		System.out.println("------------------------------");
 		System.out.println("i -> Zeige Inventar");
+		System.out.println("l -> Questlog");
 		System.out.print("Richtung? ");
 	}
 
@@ -232,6 +245,38 @@ public class Level {
 				p.setAtk(p.getAtk() + ATKBONUS);
 				System.out.printf("Die ATK des Spielers wurde um %d erhöht.%n", ATKBONUS);
 			break;
+			case Level.QUESTGIVER: 
+	               if(completedQuests<TOTALQUESTS){
+	                   this.completedQuests+= p.checkQuest(); 
+	               }
+	               if(completedQuests>=TOTALQUESTS){
+	                   System.out.println("You have Completed all the quests - You May Now Exit the Level at Z");//should be in German
+	                   canExit = true;
+	               }
+	               else{
+	                  if(p.getActiveQuests()>=TOTALQUESTS){
+	                      System.out.println("You have all avaliable quests - complete them to continue");
+	                  }
+	                  else{           
+	                      Quest q = new Quest("Luxury Pelts", "", "Pelz", 1); //add a single quest from file that hasn't been added, keep track of added quests so you don't readd
+	                      if(q.getPreReqs().equals("") || q.getPreReqs().equals(null)){ //no Prereq
+	                          p.addToQuests(q);
+	                          System.out.println("Neue Quest! "+ q.getName());
+	                          //increase quest tracking index?
+	                      }
+	                      else if(p.isQuestComplete(q)){ //check if Prereq is completed, if done
+	                          p.addToQuests(q);
+	                          System.out.println("Neue Quest! "+ q.getName());
+	                          //increase quest tracking index?
+	                      }
+	                      else{
+	                          System.out.println("You must finish '" + q.getPreReqs() + "' before getting a new quest.");
+	                          //do not increase quest tracking index?
+	                      }
+	                       
+	                  }
+	               }        
+	            break;
 			case Level.FOUNTAIN:
 				p.setHp(p.getMaxHp());
 				System.out.println("Spieler wurde vollständig geheilt!");
@@ -243,8 +288,13 @@ public class Level {
 				startTrade(p);
 			break;
 			case Level.GOAL:
-				System.out.println("Herzlichen Glückwunsch! Sie haben gewonnen!");
-				System.exit(0);
+			    if(canExit){
+                    System.out.println("Herzlichen Glückwunsch! Sie haben gewonnen!");
+                    System.exit(0); 
+                }
+                else{
+                    System.out.println("You must complete all the quests to Exit! Look for Q"); //should be in German
+                }
 			break;
 		}
 		clearField();
@@ -319,12 +369,12 @@ public class Level {
 	private void buyItem(Player p, Merchant h){
 		
 		inventoryShown = true;
-		Inventory inv = h.getInventory();
+		LinkedList inv = h.getInventory();
 		
 		System.out.println("Angebot von "+h.getName()+" :");
 		System.out.println("#########################");
 		for (int i = 0; i < inv.length(); i++) {
-			System.out.println(i + ".) " + inv.getItem(i));
+			System.out.println(i + ".) " + inv.printItem(i));
 		}
 		
 		int article = askArticleNumber(inv.length());
@@ -332,14 +382,13 @@ public class Level {
 		System.out.println(h.getVerkaufspreis(article));
 		if(h.getVerkaufspreis(article)<=p.getGold()){
 			
-			Item iv = h.getItem(article);
+			Item iv = new Item(h.getItem(article).getName());
 			
 			
 			p.deductGold(h.getVerkaufspreis(article));
 			h.addMoreGold(h.getVerkaufspreis(article));
-			iv.setWert(h.getVerkaufspreis(article));
-			//h.deleteItem(article);
-			p.addItem(iv);
+			h.deleteItem(article);
+			p.addToInventory(iv);
 	
 			
 			System.out.println("Kauf erfolgreich");
@@ -349,7 +398,7 @@ public class Level {
 			inv = p.getInventory();
 			
 			for (int i = 0; i < inv.length(); i++) {
-				System.out.println(i + ".) " + inv.getItem(i));
+				System.out.println(i + ".) " + inv.printItem(i));
 			}
 		} else {
 			System.out.println("Nicht genung Finanzreservern");
@@ -360,23 +409,23 @@ public class Level {
 	private void sellItem(Player p, Merchant h){
 		
 		inventoryShown = true;
-		Inventory inv = p.getInventory();
+		LinkedList inv = p.getInventory();
 		
 		System.out.println("Dein Inventar :");
 		System.out.println("#########################");
 		for (int i = 0; i < inv.length(); i++) {
-			System.out.println(i + ".) " + inv.getItem(i));
+			System.out.println(i + ".) " + inv.printItem(i));
 		}
 	
 		int article = askArticleNumber(inv.length());
 		p.getItem(article);
 		if(p.getAnkaufspreis(article)<=h.getGold()){
 			//System.out.println("Hier1");
-			Item iv = p.getItem(article);
+			Item iv = new Item(h.getItem(article).getName(), h.getRatio());
 			//System.out.println("Hier 2");
-			//p.deleteItem(article);
 			
-			h.addItem(iv);
+			h.addToInventory(iv);
+			p.deleteItem(article);
 			h.deductGold(p.getAnkaufspreis(article));
 			p.addMoreGold(p.getVerkaufspreis(article));
 			System.out.println("Verkauf erfolgreich");
@@ -386,7 +435,7 @@ public class Level {
 			inv = p.getInventory();
 			
 			for (int i = 0; i < inv.length(); i++) {
-				System.out.println(i + ".) " + inv.getItem(i));
+				System.out.println(i + ".) " + inv.printItem(i));
 			}
 		} else {
 			System.out.println("Händler hat nicht genügend Geld");
@@ -509,9 +558,9 @@ public class Level {
             } else if (m.isDefeated()) {
                 System.out.println("Spieler gewinnt!");
                 p.addMoreGold(m.getGold());
-                Inventory mInv = m.getInventory();
+                LinkedList mInv = m.getInventory();
                 for (int i = 0; i < mInv.length(); i++) {
-                	p.addToInventory(mInv.getItem(i));
+                	p.addToInventory((Item)mInv.getItem(i));
                 }
                 break;
             }
@@ -543,42 +592,49 @@ public class Level {
 
 	public void showInventory(Player p) {
 		inventoryShown = true;
-		Inventory inv = p.getInventory();
+		LinkedList inv = p.getInventory();
 		System.out.println("Dein Inventar umfasst: ");
 		for (int i = 0; i < inv.length(); i++) {
-			System.out.println(i + ".) " + inv.getItem(i));
+			System.out.println(i + ".) " + inv.printItem(i) );
 		}
 	}
 	
+	//Inventory
 	public void showInventory(Merchant h, Player p) {
 		inventoryShown = true;
-		Inventory inv = h.getInventory();
+		LinkedList inv = h.getInventory();
 		//System.out.println("Goldreserve von "+h.getGold()+" :");
 		//System.out.println("Ratio "+h.getRatio()+" :");
 		System.out.println("Angebot von "+h.getName()+" :");
 		System.out.println("#########################");
 		for (int i = 0; i < inv.length(); i++) {
-			System.out.println(i + ".) " + inv.getItem(i));
+			System.out.println(i + ".) " + inv.printItem(i));
 		}
 		
 		System.out.println("#########################");
 		System.out.println("Ankaufspreisliste :");
 		inv = p.getInventory();
 		for (int i = 0; i < inv.length(); i++) {
-			System.out.println(i + ".) " + inv.getItem(i));
+			System.out.println(i + ".) " + inv.printItem(i));
 		}
 		
 		
 	}
 	
-
-
 	private void chooseInventory(Player p, int index) {
 		if (index >= p.getInventory().length()) {
 			System.out.println("Sorry, Item existiert nicht.");
 			return;
 		}
-		p.setCurrentItem(p.getInventory().getItem(index));
+		p.setCurrentItem((Item)p.getInventory().getItem(index));
 	}
+	//Quests
+    public void showQuests(Player p){
+        LinkedList quests = p.getQuests();
+        System.out.println("Dein Quests umfasst: ");
+        for (int i = 0; i < quests.length(); i++) {
+            System.out.println(i + ".) " +quests.printItem(i));
+        }
+    }
 
 }
