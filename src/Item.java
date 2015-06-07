@@ -10,44 +10,29 @@ public class Item implements Comparable {
 
 	public Item() {
 		Random rand = new Random();
-		int[] value = {12,14,11,12,18,13,24,12};
-		int[] weight = {3,2,2,1,5,3,4,2};
-		String[] possibleNames = {"Leder", "Stoff", "Klaue", "Auge", "Kopf", "Schnur", "Pelz", "Zahn"};
-		int pickVals = rand.nextInt(((7-0)+1)+0);// random index from possibleNames, values and weights lists
+		int pickVals = rand.nextInt((((Level.possibleItems.length-1)-0)+1)+0);// random index from possibleNames, values and weights lists
 	
-		this.Name = possibleNames[pickVals];
-		this.Wert = value[pickVals];
-		this.Gewicht = weight[pickVals];
-
-	}	
-	
+		this.Name = ((Item)Level.possibleItems[pickVals]).getName();
+		this.Wert = ((Item)Level.possibleItems[pickVals]).getWert();
+		this.Gewicht =((Item)Level.possibleItems[pickVals]).getWeight();
+	}		
 	public Item(int ratio) {
 		Random rand = new Random();
-		int[] value = {12,14,11,12,18,13,24,12};
-		int[] weight = {3,2,2,1,5,3,4,2};
-		String[] possibleNames = {"Leder", "Stoff", "Klaue", "Auge", "Kopf", "Schnur", "Pelz", "Zahn"};
-		int pickVals = rand.nextInt(((7-0)+1)+0);// random index from possibleNames, values and weights lists
+		int pickVals = rand.nextInt((((Level.possibleItems.length-1)-0)+1)+0);// random index from possibleNames, values and weights lists
 	    
-		this.Name = possibleNames[pickVals];
-		this.Wert = value[pickVals] + ratio;
-		//System.out.println(ratio);
-		//System.out.println(Verkaufspreis);
-		this.Gewicht = weight[pickVals];
-
+		this.Name = ((Item)Level.possibleItems[pickVals]).getName();
+        this.Wert = ((Item)Level.possibleItems[pickVals]).getWert() + ratio;
+        this.Gewicht =((Item)Level.possibleItems[pickVals]).getWeight();
 	}
 	public Item(String name, int ratio){
 	    this.Name = name;
-        int[] value = {12,14,11,12,18,13,24,12};
-        int[] weight = {3,2,2,1,5,3,4,2};
-        String[] possibleNames = {"Leder", "Stoff", "Klaue", "Auge", "Kopf", "Schnur", "Pelz", "Zahn"};
         int i =0;
-        while(i<possibleNames.length && !possibleNames[i].equals(name)){
+        while(i<Level.possibleItems.length && !((Item)Level.possibleItems[i]).getName().equals(name)){
             i++;
         }
-        this.Wert = value[i] + ratio;
-        this.Gewicht = weight[i];
+        this.Wert = ((Item)Level.possibleItems[i]).getWert() + ratio;
+        this.Gewicht = ((Item)Level.possibleItems[i]).getWeight();
 	}
-
 	public Item(String name, int value, int weight) {
 		this.Name = name;
 		this.Wert = value;
@@ -55,26 +40,19 @@ public class Item implements Comparable {
 	}
 	public Item(String name) {
         this.Name = name;
-        int[] value = {12,14,11,12,18,13,24,12};
-        int[] weight = {3,2,2,1,5,3,4,2};
-        String[] possibleNames = {"Leder", "Stoff", "Klaue", "Auge", "Kopf", "Schnur", "Pelz", "Zahn"};
         int i =0;
-        while(i<possibleNames.length && !possibleNames[i].equals(name)){
+        while(i<Level.possibleItems.length && !((Item)Level.possibleItems[i]).getName().equals(name)){
             i++;
         }
-        this.Wert = value[i];
-        this.Gewicht = weight[i];
+        this.Wert = ((Item)Level.possibleItems[i]).getWert();
+        this.Gewicht = ((Item)Level.possibleItems[i]).getWeight();
     }
 	
 	public void setWert(int curWert){
 		System.out.println(curWert);
 		this.Wert = curWert - 3;
 	}
-	
-	public int getWert(){
-		return Wert;
-	}
-	
+
 
 	public boolean equals(Object obj) {
 		if (!(obj instanceof Item) || obj == null) { return false; }
@@ -126,7 +104,9 @@ public class Item implements Comparable {
 	public String getName() {
 		return Name;
 	}
-
+	public int getWert(){
+        return Wert;
+    }
 	public int getVPreis() {
 		return Wert;
 	}

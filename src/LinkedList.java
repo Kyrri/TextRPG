@@ -21,12 +21,12 @@ public class LinkedList implements List{
         boolean inList = false;
         while(current.getNext() != null && inList==false){
             if(x instanceof Item){
-                if(((Item)current.getNext().getItem()).compareTo(temp.getItem())==0){
+                if(((Item)current.getNext().getItem()).compareTo((Item)temp.getItem())==0){
                     return true;
                 } 
             }
             else if(x instanceof Quest){ //returns true if quest both exists and is complete
-                if(((Quest)current.getNext().getItem()).compareTo(temp.getItem())==0){
+                if((((Quest)current.getNext().getItem()).getName()).equals(((Quest)temp.getItem()).getPreReqs())){
                     if(((Quest)current.getNext().getItem()).isComplete()){
                         return true;
                     }
@@ -36,6 +36,7 @@ public class LinkedList implements List{
         }
         return false;
     }
+    
     public int indexInList(String name){//returns index of item in list
         Node current = this.firstItem;
         int i=0;
@@ -195,6 +196,17 @@ public class LinkedList implements List{
         }
         return this;
     }
+    public Object[] toArray(int i){
+        Node current = this.firstItem;
+        Object[] array = new Object[i];
+        int q = 0;
+        while(current.getNext() != null && q<i){
+            array[q] = current.getNext().getItem();
+            q++;
+            current = current.getNext();
+        }
+        return array;
+    }
     
     //Quest Specific
     
@@ -267,4 +279,5 @@ public class LinkedList implements List{
             next = nextValue;
         }
     }
+
 }

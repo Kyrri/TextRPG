@@ -1,3 +1,7 @@
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Scanner;
 
 /** The type Level. */
@@ -29,23 +33,122 @@ public class Level {
 	private int					playerX;
 	/** The Player y coordinate. */
 	private int					playerY;
-
+	
+	public static Object[]      possibleItems;
+	private Object[]            possibleQuests;
+	private int                 questIndex;
+	
 	private boolean				inventoryShown;
-	private final int           TOTALQUESTS;
+	private int                 TOTALQUESTS;
     private int                 completedQuests;
     private boolean             canExit;
 
 	/** Instantiates a new Level.
 	 *
 	 * @param mapData the map data */
-	public Level(char[][] mapData) {
+	public Level(char[][] mapData){
 		if (mapData.length < 3 || mapData[0].length < 3) { throw new IllegalArgumentException("Invalid Map Data"); }
 		this.mapData = mapData;
 		if (!findStart()) { throw new IllegalArgumentException("Invalid Map Data: No starting position"); }
+		try{
+		    this.readIn();
+		}catch(IOException e){
+		    System.out.println("Failure to read CSVs, no items or quests exist");
+		}
 		inventoryShown = false;
-		TOTALQUESTS = 1; //read in quests, base number on that
         completedQuests = 0;
+        questIndex = 0;
         canExit = false;
+	}
+	private void readIn() throws IOException{
+	    System.out.println("Datei laden oder Standardwerte benutzen");
+        
+        //Read in CSVs
+        int action = abfrage();
+        
+        if(action == 1){
+            int lineNumber = 0;
+            BufferedReader br = Files.newBufferedReader(Paths.get("item.csv")); 
+            String line = null;
+            String cvsSplitBy = ",";
+            LinkedList temp = new LinkedList();
+            int countItem = 0;
+            
+            while ((line = br.readLine()) != null){
+                
+                lineNumber++;
+                if (lineNumber > 1) {
+                    //line = line.replace(',', '.');
+                   // System.out.println(line);
+                    String[] zeile = line.split(cvsSplitBy);
+                    
+                    if ( line.trim().length() == 0 ) {
+                        continue;  // Skip blank lines
+                      }
+                    
+                    String name = zeile[0]; 
+                    
+                    int value = (int) Double.parseDouble(zeile[1]);
+                    int weight = (int) Double.parseDouble(zeile[2]);
+                    Item item = new Item(name.trim(), value, weight);
+                    temp.append(item);
+                    countItem++;
+                }
+            }
+            possibleItems = temp.toArray(countItem);
+            
+            lineNumber = 0;
+            countItem = 0;
+            br = Files.newBufferedReader(Paths.get("quest.csv")); 
+            line = null;
+            temp = new LinkedList();
+            
+            while ((line = br.readLine()) != null){
+                
+                lineNumber++;
+                if (lineNumber > 1) {
+                    //line = line.replace(',', '.');
+                    
+                    if ( line.trim().length() == 0 ) {
+                        continue;  // Skip blank lines
+                      }
+                    String[] zeile = line.split(cvsSplitBy);
+                    String name = zeile[0];
+                    String prequest = zeile[1];
+                    String item = zeile[2];
+                    int quatity = (int) Double.parseDouble(zeile[3]);
+                    
+                    Quest quest = new Quest(name.trim(), prequest.trim(), item.trim(), quatity);
+                    temp.append(quest);
+                    countItem++;
+                }
+            }
+            possibleQuests = temp.toArray(countItem);
+            TOTALQUESTS = possibleQuests.length;      
+        }
+	}
+	
+	private static int abfrage(){
+        System.out.println("1 für Datei laden");
+        System.out.println("2 für Standardwerte");
+        Scanner sc = new Scanner(System.in);
+        String eingabe = sc.nextLine();
+        if (eingabe.equals("1")){
+            return 1;
+        } else if (eingabe.equals("2")){
+            return 2;
+        } else {
+            System.out.println("Ungültige Eingabe");
+            abfrage();
+            return 0;
+        }
+        
+    }
+	public Object[] getPossibleItems(){
+	    return possibleItems;
+	}
+	public Object[] getPossibleQuests(){
+	    return possibleQuests;
 	}
 
 	/** Find start.
@@ -258,20 +361,23 @@ public class Level {
 	                      System.out.println("You have all avaliable quests - complete them to continue");
 	                  }
 	                  else{           
-	                      Quest q = new Quest("Luxury Pelts", "", "Pelz", 1); //add a single quest from file that hasn't been added, keep track of added quests so you don't readd
+	                      Quest q = (Quest)this.possibleQuests[questIndex];
 	                      if(q.getPreReqs().equals("") || q.getPreReqs().equals(null)){ //no Prereq
 	                          p.addToQuests(q);
 	                          System.out.println("Neue Quest! "+ q.getName());
-	                          //increase quest tracking index?
+	                          if(questIndex<TOTALQUESTS-1){
+	                              questIndex++;
+	                          }
 	                      }
 	                      else if(p.isQuestComplete(q)){ //check if Prereq is completed, if done
 	                          p.addToQuests(q);
 	                          System.out.println("Neue Quest! "+ q.getName());
-	                          //increase quest tracking index?
+	                          if(questIndex<TOTALQUESTS-1){
+                                  questIndex++;
+                              }
 	                      }
 	                      else{
 	                          System.out.println("You must finish '" + q.getPreReqs() + "' before getting a new quest.");
-	                          //do not increase quest tracking index?
 	                      }
 	                       
 	                  }
@@ -315,9 +421,9 @@ public class Level {
 	private static Merchant randomMerchant() {
 		Merchant wto;
 		if(Math.random() <= 0.50){
-			wto = new Merchant("TraderJoe", 100, 3);	
+			wto = new Merchant("Trader Joe", 100, 3);	
 		} else {
-			wto = new Merchant("TraderJeb", 90, 6);
+			wto = new Merchant("Trader Jeb", 90, 6);
 		}
 		return wto;
 	}
