@@ -1,63 +1,35 @@
 import java.util.Random;
 
 public class Item implements Comparable {
-	private int 	number = 0;
-	private String	Name;
-	private int		Wert;
+
+	private String	Namen;
+	private int		Verkaufswert;
 	private int		Gewicht;
-	private int 	Verkaufspreis;
-	private int 	Ankaufspreis;
 
 	public Item() {
 		Random rand = new Random();
-		int[] value = {12,14,11,12,18,13,24,12};
+		int[] value = {5,4,1,2,8,3,10,2};
 		int[] weight = {3,2,2,1,5,3,4,2};
 		String[] possibleNames = {"Leder", "Stoff", "Klaue", "Auge", "Kopf", "Schnur", "Pelz", "Zahn"};
 		int pickVals = rand.nextInt(((7-0)+1)+0);// random index from possibleNames, values and weights lists
 	
-		this.Name = possibleNames[pickVals];
-		this.Wert = value[pickVals];
-		this.Gewicht = weight[pickVals];
-
-	}	
-	
-	public Item(int ratio) {
-		Random rand = new Random();
-		int[] value = {12,14,11,12,18,13,24,12};
-		int[] weight = {3,2,2,1,5,3,4,2};
-		String[] possibleNames = {"Leder", "Stoff", "Klaue", "Auge", "Kopf", "Schnur", "Pelz", "Zahn"};
-		int pickVals = rand.nextInt(((7-0)+1)+0);// random index from possibleNames, values and weights lists
-	    
-		this.Name = possibleNames[pickVals];
-		this.Wert = value[pickVals];
-		this.Wert = Wert + ratio;
-		//System.out.println(ratio);
-		//System.out.println(Verkaufspreis);
+		this.Namen = possibleNames[pickVals];
+		this.Verkaufswert = value[pickVals];
 		this.Gewicht = weight[pickVals];
 
 	}
 
 	public Item(String name, int value, int weight) {
-		this.Name = name;
-		this.Wert = value;
+		this.Namen = name;
+		this.Verkaufswert = value;
 		this.Gewicht = weight;
 	}
-	
-	public void setWert(int curWert){
-		System.out.println(curWert);
-		this.Wert = curWert - 3;
-	}
-	
-	public int getWert(){
-		return Wert;
-	}
-	
 
 	public boolean equals(Object obj) {
 		if (!(obj instanceof Item) || obj == null) { return false; }
 		if (obj == this) { return true; }
 		Item compare = (Item) obj;
-		if (compare.Name.toUpperCase() == this.Name.toUpperCase() && compare.Wert == this.Wert
+		if (compare.Namen.toUpperCase() == this.Namen.toUpperCase() && compare.Verkaufswert == this.Verkaufswert
 				&& compare.Gewicht == this.Gewicht) {
 			return true;
 		} else {
@@ -65,11 +37,9 @@ public class Item implements Comparable {
 		}
 
 	}
-	
-	
 
 	public String toString() {
-		return " Name: " + this.Name + ", Wert: " + this.Wert + ", Gewicht: " + this.Gewicht;
+		return "Namen: " + this.Namen + ", Verkaufswert: " + this.Verkaufswert + ", Gewicht: " + this.Gewicht;
 	}
 
 	public int compareTo(Object o) throws IllegalArgumentException { // returns -1 if current item alphabetically (or
@@ -81,10 +51,10 @@ public class Item implements Comparable {
 		}
 
 		Item compare = (Item) o;
-		if (this.Name.toUpperCase().compareTo(compare.Name.toUpperCase()) != 0) {
-			return this.Name.toUpperCase().compareTo(compare.Name.toUpperCase());
-		} else if (this.Wert != compare.Wert) {
-			if (this.Wert < compare.Wert) {
+		if (this.Namen.toUpperCase().compareTo(compare.Namen.toUpperCase()) != 0) {
+			return this.Namen.toUpperCase().compareTo(compare.Namen.toUpperCase());
+		} else if (this.Verkaufswert != compare.Verkaufswert) {
+			if (this.Verkaufswert < compare.Verkaufswert) {
 				return -1;
 			} else {
 				return 1;
@@ -101,14 +71,12 @@ public class Item implements Comparable {
 	}
 
 	public String getName() {
-		return Name;
+		return this.Namen;
 	}
-
-	public int getVPreis() {
-		return Wert;
+	public int getValue(){
+	   return this.Verkaufswert;
 	}
-	
-	public int getAPreis() {
-		return Wert;
+	public int getWeight(){
+	    return this.Gewicht;
 	}
 }

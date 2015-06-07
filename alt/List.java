@@ -14,38 +14,37 @@ public interface List {
 	 *
 	 * @param x das Item
 	 * @return true, x ist in der Liste enthalten */
-	boolean isInList(Item x);
+	boolean isInList(Object x);
 
 	/** Gibt das erste Item der Liste zurueck
 	 *
 	 * @return das erste Item
 	 * @throws IllegalStateException wenn die Liste leer ist */
-	Item firstItem() throws IllegalStateException;
+	Object firstItem() throws IllegalStateException;
 
 	/** Gibt das i-te Item der Liste zurueck
 	 *
 	 * @param i der Index
 	 * @return das i-te Item
 	 * @throws IndexOutOfBoundsException wenn i < 0 oder i >= length() */
-	Item getItem(int i) throws IndexOutOfBoundsException;
+	Object getItem(int i) throws IndexOutOfBoundsException;
 
 	/** Fuegt ein Element sortiert in die Liste ein
 	 *
 	 * @param x das Item
 	 * @return die geanderte Liste */
-	List insert(Item x);
+	List insert(Object x);
 
 	/** Fuegt ein Element an das Ende der Liste ein
 	 *
 	 * @param x das Item
 	 * @return die geanderte Liste */
-	List append(Item x);
-
+	List append(Object x);
 	/** Loescht das erste vorkommen des Items x
 	 *
 	 * @param x das Item
 	 * @return die geanderte Liste */
-	List delete(Item x);
+	List delete(Object x);
 
 	/** Loescht das erste Element der Liste
 	 *

@@ -22,7 +22,6 @@ public class Player extends Character {
      * The Remaining item uses.
      */
     private int remainingItemUses;
-	private int money;
 
     /**
      * The constant HARD_HIT_COST.
@@ -45,9 +44,8 @@ public class Player extends Character {
     /**
      * Instantiates a new Player.
      */
-    // TODO zurück auf 0
     public Player() {
-        this(200,130, 20, 70, 3, 0.8);
+        this(0,130, 20, 70, 3, 0.8);
     }
 
     /**
@@ -192,8 +190,5 @@ public class Player extends Character {
             return true;
         }
     }
-
-
-	
 
 }

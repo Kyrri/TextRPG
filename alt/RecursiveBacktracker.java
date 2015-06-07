@@ -25,12 +25,6 @@ public class RecursiveBacktracker implements MazeGenerator {
      * The Random Instance.
      */
     private Random r = new Random();
-    
-    /**
-     * Merchant amount constrain variable
-     */
-    
-    private int p = 0;
 
     /**
      * The Goal set.
@@ -139,16 +133,14 @@ public class RecursiveBacktracker implements MazeGenerator {
                     if (neighbors >= 3) {
                         maze[i][j] = BATTLECHAR;
                     } else if (neighbors == 1) {
-                        if (r.nextDouble() > 0.5) {
+                        double n = r.nextDouble();
+                        if(n > 0.75){
+                            maze[i][j] = QUESTGIVERCHAR;
+                        }
+                        else if (n > 0.5) {
                             maze[i][j] = WELLCHAR;
                         } else {
-                                
-                                if (p < 2) {
-                                	p++;
-                                	maze[i][j] = MERCHANTCHAR;
-                                } else {
-                                    maze[i][j] = SMITHYCHAR;
-                                }
+                            maze[i][j] = SMITHYCHAR;
                         }
                     }  
                 }
@@ -212,8 +204,7 @@ public class RecursiveBacktracker implements MazeGenerator {
      * @return the map as char [] []
      */
     private char[][] generate(int curX, int curY, char[][] maze) {
-    	maze[curY][curX] = MERCHANTCHAR;
-    	//maze[curY][curX] = FREECHAR;
+        maze[curY][curX] = FREECHAR;
         int[] validPositions = new int[offsets.length];
         int validPositionCount = offsets.length;
         for (int i = 0; i < offsets.length; ++i) {

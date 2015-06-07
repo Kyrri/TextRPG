@@ -32,9 +32,13 @@ public interface MazeGenerator {
      */
     char GOALCHAR = 'Z';
     /**
-     * The MERCHANTCHAR
+     * 
      */
     char MERCHANTCHAR = 'H';
+    /**
+     * 
+     */
+    char QUESTGIVERCHAR = 'Q';
 
     /**
      * Generate char [ ] [ ].
