@@ -230,7 +230,7 @@ public class Level {
 	/** Clear field. */
 	private void clearField() {
 		char field = getField();
-		if (field == SMITHY) {
+		if (field == SMITHY || field == FOUNTAIN || field == BATTLE) {
 			mapData[playerY][playerX] = PLAIN;
 		}
 	}
