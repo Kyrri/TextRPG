@@ -1,18 +1,18 @@
 /** The type Character. */
 public class Character {
 
-	private int				gold;
+	private int				      gold;
 	/** The Max hp. */
-	private int				maxHp;
-	/** The Hp. */
-	private int				hp;
+	private int				      maxHp;
+	/** The Hp. */ 
+	private int				      hp;
 	/** The Atk. */
-	private int				atk;
+	private int				      atk;
 	/** The Hit chance. */
-	private double			hitChance;
-	private int 			ratio;
-	private LinkedList      inventory;
-	private LinkedList      questLog;
+	private double			      hitChance;
+	private int 			      ratio;
+	private LinkedList<Item>      inventory;
+	private LinkedList<Quest>     questLog;
 	
 	private Item currentItem;
 	private String name;
@@ -34,15 +34,15 @@ public class Character {
 		this.hitChance = hitChance;
 		this.gold = gold;
 		this.currentItem = null;
-		this.inventory = new LinkedList();
-        this.questLog = new LinkedList();
+		this.inventory = new LinkedList<Item>();
+        this.questLog = new LinkedList<Quest>();
 	}
 	public Character(String name, int gold, int ratio){
 		this.setName(name);
 		this.gold = gold;
 		this.ratio = ratio;
-		this.inventory = new LinkedList();
-        this.questLog = new LinkedList();
+		this.inventory = new LinkedList<Item>();
+        this.questLog = new LinkedList<Quest>();
 		
 	}
 	
@@ -145,7 +145,7 @@ public class Character {
 		}
 	}
 	//Inventory methods
-	public LinkedList getInventory() {
+	public LinkedList<Item> getInventory() {
 		return inventory;
 	}
 	
@@ -169,7 +169,7 @@ public class Character {
 	 * @return Item
 	 */
 	public Item getItem(int number) {
-			Item it = (Item)inventory.getItem(number);
+			Item it = inventory.getItem(number);
             if(it != null){
                 return it; 
             }
@@ -181,7 +181,7 @@ public class Character {
 	 * @return Verkaufspreis des Händlers
 	 */
 	public int getVerkaufspreis(int number){
-			Item it = (Item)inventory.getItem(number);
+			Item it = inventory.getItem(number);
 			if(it != null){
 			    int preis = it.getVPreis();
                 return preis;  
@@ -194,7 +194,7 @@ public class Character {
 	 * @return Ankaufspreis eines Item für den Händler
 	 */
 	public int getAnkaufspreis(int number){
-			Item it = (Item)inventory.getItem(number);
+			Item it = inventory.getItem(number);
 			if(it !=null){
 			    int preis = it.getAPreis();
                 return preis;  
@@ -206,7 +206,7 @@ public class Character {
 	 * @param number des items aus der Liste
 	 */
 	public void deleteItem(int number){
-		Item it = (Item)inventory.getItem(number);
+		Item it = inventory.getItem(number);
 			//System.out.println("Hier bin ich!!");
 			inventory.delete(it);
 			//System.out.println("Hier bin ich auch noch!!");
@@ -235,7 +235,7 @@ public class Character {
 	}
 	
 	//Questlog methods
-    public LinkedList getQuests(){
+    public LinkedList<Quest> getQuests(){
         return questLog;
     }
     public int getActiveQuests(){
@@ -255,14 +255,14 @@ public class Character {
            return 0;
        }
        else{
-           Item compare = (Item)inventory.getItem(finishedQuest[0]);
+           Item compare = inventory.getItem(finishedQuest[0]);
            for(int i = 0; i< finishedQuest[1]; i++){
               inventory.delete(compare);
            }
            return 1;
        }
     }
-    public boolean isQuestComplete(Object quest){
+    public boolean isQuestComplete(Quest quest){
         return questLog.isInList(quest);
     }
 }

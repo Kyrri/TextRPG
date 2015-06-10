@@ -23,7 +23,6 @@ public class Quest implements Comparable{
         return this.Anzahl;
     }
 
-
     public String toString() {
         return "Namen: " + this.Namen + ", Abgeschlossen: " + (this.Abgeschlossen?"Erf�llt":"Nicht Erf�llt") + ", Questgegenstand: " + this.Questgegenstand + ", Anzahl: " + this.Anzahl;
     }
@@ -49,7 +48,7 @@ public class Quest implements Comparable{
         }
 
     }
-
+    //assumes unique quest names
     public int compareTo(Object o) throws IllegalArgumentException { // returns -1 if current item alphabetically (or
                                                                         // value or weight if former the same) proceeds
                                                                         // object

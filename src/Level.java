@@ -34,8 +34,8 @@ public class Level {
 	/** The Player y coordinate. */
 	private int					playerY;
 	
-	public static Object[]      possibleItems;
-	private Object[]            possibleQuests;
+	public static Item[]        possibleItems;
+	private Quest[]             possibleQuests;
 	private int                 questIndex;
 	
 	private boolean				inventoryShown;
@@ -70,10 +70,10 @@ public class Level {
         // Einlesen des ITEM.CSV Files
         if(action == 1){
             int lineNumber = 0;
-            BufferedReader br = Files.newBufferedReader(Paths.get("item.csv")); 
+            BufferedReader br = Files.newBufferedReader(Paths.get("src/item.csv")); 
             String line = null;
             String cvsSplitBy = ",";
-            LinkedList temp = new LinkedList();
+            LinkedList<Item> tempItem = new LinkedList<Item>();
             int countItem = 0;
             
             while ((line = br.readLine()) != null){
@@ -93,24 +93,29 @@ public class Level {
                     int value = (int) Double.parseDouble(zeile[1]);
                     int weight = (int) Double.parseDouble(zeile[2]);
                     Item item = new Item(name.trim(), value, weight);
-                    temp.append(item);
+                    tempItem.append(item);
                     countItem++;
                 }
             }
+            possibleItems = new Item[countItem];
+            Object[] storeItems = tempItem.toArray(countItem);
+            for(int i=0; i<storeItems.length; i++){
+                possibleItems[i] = (Item)storeItems[i];
+            }
             
-            possibleItems = temp.toArray(countItem);
             // Einlesen des QUEST Files
             lineNumber = 0;
             countItem = 0;
-            br = Files.newBufferedReader(Paths.get("quest.csv")); 
+            br = Files.newBufferedReader(Paths.get("src/quest.csv")); 
             line = null;
-            temp = new LinkedList();
+            LinkedList<Quest> tempQuest = new LinkedList<Quest>();
             
             while ((line = br.readLine()) != null){
                 
                 lineNumber++;
                 if (lineNumber > 1) {
                     //line = line.replace(',', '.');
+                    //System.out.println(line);
                     
                     if ( line.trim().length() == 0 ) {
                         continue;  // Skip blank lines
@@ -122,12 +127,16 @@ public class Level {
                     int quatity = (int) Double.parseDouble(zeile[3]);
                     
                     Quest quest = new Quest(name.trim(), prequest.trim(), item.trim(), quatity);
-                    temp.append(quest);
+                    tempQuest.append(quest);
                     countItem++;
                 }
             }
-            possibleQuests = temp.toArray(countItem);
-            TOTALQUESTS = possibleQuests.length;      
+              possibleQuests = new Quest[countItem];
+              Object[] storeQuests = tempQuest.toArray(countItem);
+              for(int i=0; i<storeQuests.length; i++){
+                  possibleQuests[i] = (Quest)storeQuests[i];
+              }
+              TOTALQUESTS = possibleQuests.length;      
         }
 	}
 	/**
@@ -150,9 +159,6 @@ public class Level {
         }
         
     }
-	public Object[] getPossibleItems(){
-	    return possibleItems;
-	}
 	public Object[] getPossibleQuests(){
 	    return possibleQuests;
 	}
@@ -355,7 +361,7 @@ public class Level {
 				System.out.printf("Die ATK des Spielers wurde um %d erhöht.%n", ATKBONUS);
 			break;
 			case Level.QUESTGIVER: 
-	               if(completedQuests<TOTALQUESTS){
+	               if(completedQuests<TOTALQUESTS && p.getActiveQuests()>0){
 	                   this.completedQuests+= p.checkQuest(); 
 	               }
 	               if(completedQuests>=TOTALQUESTS){
@@ -367,7 +373,7 @@ public class Level {
 	                      System.out.println("Du hast alle Quests im Log - schließe sie nun ab, um fortzufahren");
 	                  }
 	                  else{           
-	                      Quest q = (Quest)this.possibleQuests[questIndex];
+	                      Quest q = this.possibleQuests[questIndex];
 	                      if(q.getPreReqs().equals("") || q.getPreReqs().equals(null)){ //no Prereq
 	                          p.addToQuests(q);
 	                          System.out.println("Neue Quest! "+ q.getName());
@@ -670,9 +676,9 @@ public class Level {
             } else if (m.isDefeated()) {
                 System.out.println("Spieler gewinnt!");
                 p.addMoreGold(m.getGold());
-                LinkedList mInv = m.getInventory();
+                LinkedList<Item> mInv = m.getInventory();
                 for (int i = 0; i < mInv.length(); i++) {
-                	p.addToInventory((Item)mInv.getItem(i));
+                	p.addToInventory(mInv.getItem(i));
                 }
                 break;
             }
@@ -738,11 +744,11 @@ public class Level {
 			System.out.println("Sorry, Item existiert nicht.");
 			return;
 		}
-		p.setCurrentItem((Item)p.getInventory().getItem(index));
+		p.setCurrentItem(p.getInventory().getItem(index));
 	}
 	//Quests
     public void showQuests(Player p){
-        LinkedList quests = p.getQuests();
+        LinkedList<Quest> quests = p.getQuests();
         System.out.println("Dein Quests umfasst: ");
         for (int i = 0; i < quests.length(); i++) {
             System.out.println(i + ".) " +quests.printItem(i));

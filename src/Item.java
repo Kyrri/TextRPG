@@ -1,10 +1,8 @@
 import java.util.Random;
 
-
-
 public class Item implements Comparable {
 	private int 	number = 0;
-	private String	Name;
+	private String	Namen;
 	private int		Wert;
 	private int		Gewicht;
 	private int 	Verkaufspreis;
@@ -16,11 +14,11 @@ public class Item implements Comparable {
 	
 	public Item() {
 		Random rand = new Random();
-		int pickVals = rand.nextInt((((Level.possibleItems.length-1)-0)+1)+0);// random index from possibleNames, values and weights lists
+		int pickVals = rand.nextInt(Level.possibleItems.length);// random index from possibleNames, values and weights lists
 	
-		this.Name = ((Item)Level.possibleItems[pickVals]).getName();
-		this.Wert = ((Item)Level.possibleItems[pickVals]).getWert();
-		this.Gewicht =((Item)Level.possibleItems[pickVals]).getWeight();
+		this.Namen = (Level.possibleItems[pickVals]).getName();
+		this.Wert = (Level.possibleItems[pickVals]).getWert();
+		this.Gewicht =(Level.possibleItems[pickVals]).getWeight();
 	}
 	/**
 	 * 
@@ -30,11 +28,11 @@ public class Item implements Comparable {
 	 */
 	public Item(int ratio) {
 		Random rand = new Random();
-		int pickVals = rand.nextInt((((Level.possibleItems.length-1)-0)+1)+0);// random index from possibleNames, values and weights lists
+		int pickVals = rand.nextInt(Level.possibleItems.length);// random index from possibleNames, values and weights lists
 	    
-		this.Name = ((Item)Level.possibleItems[pickVals]).getName();
-        this.Wert = ((Item)Level.possibleItems[pickVals]).getWert() + ratio;
-        this.Gewicht =((Item)Level.possibleItems[pickVals]).getWeight();
+		this.Namen = (Level.possibleItems[pickVals]).getName();
+        this.Wert = (Level.possibleItems[pickVals]).getWert() + ratio;
+        this.Gewicht =(Level.possibleItems[pickVals]).getWeight();
 	}
 	/**
 	 * 
@@ -42,28 +40,28 @@ public class Item implements Comparable {
 	 * @param ratio Gewinnmarge des Händlers
 	 */
 	public Item(String name, int ratio){
-	    this.Name = name;
+	    this.Namen = name;
         int i =0;
-        while(i<Level.possibleItems.length && !((Item)Level.possibleItems[i]).getName().equals(name)){
+        while(i<Level.possibleItems.length && !(Level.possibleItems[i]).getName().equals(name)){
             i++;
         }
-        this.Wert = ((Item)Level.possibleItems[i]).getWert() + ratio;
-        this.Gewicht = ((Item)Level.possibleItems[i]).getWeight();
+        this.Wert = (Level.possibleItems[i]).getWert() + ratio;
+        this.Gewicht = (Level.possibleItems[i]).getWeight();
 	}
 	
 	public Item(String name, int value, int weight) {
-		this.Name = name;
+		this.Namen = name;
 		this.Wert = value;
 		this.Gewicht = weight;
 	}
 	public Item(String name) {
-        this.Name = name;
+        this.Namen = name;
         int i =0;
-        while(i<Level.possibleItems.length && !((Item)Level.possibleItems[i]).getName().equals(name)){
+        while(i<Level.possibleItems.length && !(Level.possibleItems[i]).getName().equals(name)){
             i++;
         }
-        this.Wert = ((Item)Level.possibleItems[i]).getWert();
-        this.Gewicht = ((Item)Level.possibleItems[i]).getWeight();
+        this.Wert = (Level.possibleItems[i]).getWert();
+        this.Gewicht = (Level.possibleItems[i]).getWeight();
     }
 	/**
 	 * 
@@ -80,7 +78,7 @@ public class Item implements Comparable {
 		if (!(obj instanceof Item) || obj == null) { return false; }
 		if (obj == this) { return true; }
 		Item compare = (Item) obj;
-		if (compare.Name.toUpperCase() == this.Name.toUpperCase() && compare.Wert == this.Wert
+		if (compare.Namen.toUpperCase() == this.Namen.toUpperCase() && compare.Wert == this.Wert
 				&& compare.Gewicht == this.Gewicht) {
 			return true;
 		} else {
@@ -92,7 +90,7 @@ public class Item implements Comparable {
 	
 
 	public String toString() {
-		return " Name: " + this.Name + ", Wert: " + this.Wert + ", Gewicht: " + this.Gewicht;
+		return " Name: " + this.Namen + ", Wert: " + this.Wert + ", Gewicht: " + this.Gewicht;
 	}
 
 	public int compareTo(Object o) throws IllegalArgumentException { // returns -1 if current item alphabetically (or
@@ -104,8 +102,8 @@ public class Item implements Comparable {
 		}
 
 		Item compare = (Item) o;
-		if (this.Name.toUpperCase().compareTo(compare.Name.toUpperCase()) != 0) {
-			return this.Name.toUpperCase().compareTo(compare.Name.toUpperCase());
+		if (this.Namen.toUpperCase().compareTo(compare.Namen.toUpperCase()) != 0) {
+			return this.Namen.toUpperCase().compareTo(compare.Namen.toUpperCase());
 		} else if (this.Wert != compare.Wert) {
 			if (this.Wert < compare.Wert) {
 				return -1;
@@ -124,7 +122,7 @@ public class Item implements Comparable {
 	}
 
 	public String getName() {
-		return Name;
+		return Namen;
 	}
 	public int getWert(){
         return Wert;
