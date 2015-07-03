@@ -73,7 +73,7 @@ public class Level {
             BufferedReader br = Files.newBufferedReader(Paths.get("src/item.csv")); 
             String line = null;
             String cvsSplitBy = ",";
-            LinkedList<Item> tempItem = new LinkedList<Item>();
+            Item[] storeItems= new Item[100];
             int countItem = 0;
             
             while ((line = br.readLine()) != null){
@@ -93,14 +93,13 @@ public class Level {
                     int value = (int) Double.parseDouble(zeile[1]);
                     int weight = (int) Double.parseDouble(zeile[2]);
                     Item item = new Item(name.trim(), value, weight);
-                    tempItem.append(item);
+                    storeItems[countItem] = item;
                     countItem++;
                 }
             }
             possibleItems = new Item[countItem];
-            Object[] storeItems = tempItem.toArray(countItem);
-            for(int i=0; i<storeItems.length; i++){
-                possibleItems[i] = (Item)storeItems[i];
+            for(int i=0; i<countItem; i++){
+                possibleItems[i] = storeItems[i];
             }
             
             // Einlesen des QUEST Files
@@ -108,7 +107,7 @@ public class Level {
             countItem = 0;
             br = Files.newBufferedReader(Paths.get("src/quest.csv")); 
             line = null;
-            LinkedList<Quest> tempQuest = new LinkedList<Quest>();
+            Quest tempQuest[] = new Quest[100];
             
             while ((line = br.readLine()) != null){
                 
@@ -127,14 +126,13 @@ public class Level {
                     int quatity = (int) Double.parseDouble(zeile[3]);
                     
                     Quest quest = new Quest(name.trim(), prequest.trim(), item.trim(), quatity);
-                    tempQuest.append(quest);
+                    tempQuest[countItem] = quest;
                     countItem++;
                 }
             }
               possibleQuests = new Quest[countItem];
-              Object[] storeQuests = tempQuest.toArray(countItem);
-              for(int i=0; i<storeQuests.length; i++){
-                  possibleQuests[i] = (Quest)storeQuests[i];
+              for(int i=0; i<countItem; i++){
+                  possibleQuests[i] = tempQuest[i];
               }
               TOTALQUESTS = possibleQuests.length;      
         }
@@ -389,7 +387,7 @@ public class Level {
                               }
 	                      }
 	                      else{
-	                          System.out.println("Du musst zuerst die Bedingung '" + q.getPreReqs() + "' erfüllen.");
+	                          System.out.println("Du musst zuerst die Bedingung '" + q.getPreReqs() + "' f�r eine neue Quest erfüllen haben.");
 	                      }
 	                       
 	                  }
@@ -423,7 +421,6 @@ public class Level {
 	 * @return the monster */
 	private static Monster randomMonster() {
 		Monster[] monsterFarm = { new Monster(), new ResistantMonster(), new WaitingMonster() };
-
 		double bucketSize = 1.0 / monsterFarm.length;
 		double bucket = Math.random() / bucketSize;
 		int selectedMonster = (int) Math.floor(bucket);
@@ -487,14 +484,13 @@ public class Level {
 	private void buyItem(Player p, Merchant h){
 		
 		inventoryShown = true;
-		LinkedList inv = h.getInventory();
+		AVLTree<Item> inv = h.getInventory();
 		
 		System.out.println("Angebot von "+h.getName()+" :");
 		System.out.println("#########################");
-		for (int i = 0; i < inv.length(); i++) {
-			System.out.println(i + ".) " + inv.printItem(i));
-		}
 		
+		inv.printItems();
+
 		int article = askArticleNumber(inv.length());
 		h.getItem(article);
 		System.out.println(h.getVerkaufspreis(article));
@@ -514,10 +510,9 @@ public class Level {
 			System.out.println("Dein Inventar");
 			System.out.println("#########################");
 			inv = p.getInventory();
+
+			inv.printItems();
 			
-			for (int i = 0; i < inv.length(); i++) {
-				System.out.println(i + ".) " + inv.printItem(i));
-			}
 		} else {
 			System.out.println("Nicht genung Finanzreservern");
 		}
@@ -527,13 +522,12 @@ public class Level {
 	private void sellItem(Player p, Merchant h){
 		
 		inventoryShown = true;
-		LinkedList inv = p.getInventory();
+		AVLTree<Item> inv = p.getInventory();
 		
 		System.out.println("Dein Inventar :");
 		System.out.println("#########################");
-		for (int i = 0; i < inv.length(); i++) {
-			System.out.println(i + ".) " + inv.printItem(i));
-		}
+		
+		inv.printItems();
 	
 		int article = askArticleNumber(inv.length());
 		p.getItem(article);
@@ -552,9 +546,7 @@ public class Level {
 			System.out.println("#########################");
 			inv = p.getInventory();
 			
-			for (int i = 0; i < inv.length(); i++) {
-				System.out.println(i + ".) " + inv.printItem(i));
-			}
+			inv.printItems();
 		} else {
 			System.out.println("Händler hat nicht genügend Geld");
 		}
@@ -656,7 +648,7 @@ public class Level {
                 		String s = sc.nextLine();
                 		try {
                 			System.out.println("Wähle ein Item aus (0 - " + (p.getInventory().length() - 1) + "):");
-                			chooseInventory(p, Integer.parseInt(s));
+                			//chooseInventory(p, Integer.parseInt(s));
                 		} catch (Exception e) {
                 			System.out.println("Das ist was falsch gelaufen ... Eingabe ignoriert.");
                 		}
@@ -676,9 +668,12 @@ public class Level {
             } else if (m.isDefeated()) {
                 System.out.println("Spieler gewinnt!");
                 p.addMoreGold(m.getGold());
-                LinkedList<Item> mInv = m.getInventory();
-                for (int i = 0; i < mInv.length(); i++) {
-                	p.addToInventory(mInv.getItem(i));
+                AVLTree<Item> mInv = m.getInventory();
+                int length = mInv.length();
+                for (int i = 0; i < length; i++) {
+                    Item temp = mInv.firstItem();
+                    p.addToInventory(temp);
+                    mInv.delete(temp);
                 }
                 break;
             }
@@ -710,49 +705,41 @@ public class Level {
 
 	public void showInventory(Player p) {
 		inventoryShown = true;
-		LinkedList inv = p.getInventory();
+		AVLTree<Item> inv = p.getInventory();
 		System.out.println("Dein Inventar umfasst: ");
-		for (int i = 0; i < inv.length(); i++) {
-			System.out.println(i + ".) " + inv.printItem(i) );
-		}
+		inv.printItems();
 	}
 	
 	//Inventory
 	public void showInventory(Merchant h, Player p) {
 		inventoryShown = true;
-		LinkedList inv = h.getInventory();
+		AVLTree<Item> inv = h.getInventory();
 		//System.out.println("Goldreserve von "+h.getGold()+" :");
 		//System.out.println("Ratio "+h.getRatio()+" :");
 		System.out.println("Angebot von "+h.getName()+" :");
 		System.out.println("#########################");
-		for (int i = 0; i < inv.length(); i++) {
-			System.out.println(i + ".) " + inv.printItem(i));
-		}
+		inv.printItems();
 		
 		System.out.println("#########################");
 		System.out.println("Ankaufspreisliste :");
 		inv = p.getInventory();
-		for (int i = 0; i < inv.length(); i++) {
-			System.out.println(i + ".) " + inv.printItem(i));
-		}
+		inv.printItems();
 		
 		
 	}
 	
-	private void chooseInventory(Player p, int index) {
-		if (index >= p.getInventory().length()) {
-			System.out.println("Sorry, Item existiert nicht.");
-			return;
-		}
-		p.setCurrentItem(p.getInventory().getItem(index));
-	}
+//	private void chooseInventory(Player p, int index) {
+//		if (index >= p.getInventory().length()) {
+//			System.out.println("Sorry, Item existiert nicht.");
+//			return;
+//		}
+//		p.setCurrentItem(p.getInventory().getItem(index));
+//	}
 	//Quests
     public void showQuests(Player p){
-        LinkedList<Quest> quests = p.getQuests();
+        AVLTree<Quest> quests = p.getQuests();
         System.out.println("Dein Quests umfasst: ");
-        for (int i = 0; i < quests.length(); i++) {
-            System.out.println(i + ".) " +quests.printItem(i));
-        }
+        quests.printItems();
     }
 
 }
