@@ -1,7 +1,16 @@
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
+
 /**
- * The type Player.
+ * The type Player. Player implements Serializable and not Character due to the
+ * fact that only the player's values should be saved.
  */
-public class Player extends Character {
+public class Player extends Character implements Serializable {
+    private static final long serialVersionUID = 42;
     /**
      * The Max ap.
      */
@@ -22,7 +31,7 @@ public class Player extends Character {
      * The Remaining item uses.
      */
     private int remainingItemUses;
-	private int money;
+//    private int money;
 
     /**
      * The constant HARD_HIT_COST.
@@ -47,48 +56,131 @@ public class Player extends Character {
      */
     // TODO zurück auf 0
     public Player() {
-        this(200,130, 20, 70, 3, 0.8);
+        this(200, 130, 20, 70, 3, 0.8);
     }
 
     /**
      * Instantiates a new Player.
      *
-     * @param maxHp             the max hp
-     * @param atk               the atk
-     * @param healingPower      the healing power
-     * @param remainingItemUses the remaining item uses
-     * @param hitChance         the hit chance
+     * @param maxHp
+     *            the max hp
+     * @param atk
+     *            the atk
+     * @param healingPower
+     *            the healing power
+     * @param remainingItemUses
+     *            the remaining item uses
+     * @param hitChance
+     *            the hit chance
      */
-    public Player(int gold, int maxHp, int atk, int healingPower, int remainingItemUses, double hitChance) {
-        this(gold, maxHp, atk, healingPower, remainingItemUses, hitChance, 70, 10);
+    public Player(int gold, int maxHp, int atk, int healingPower,
+            int remainingItemUses, double hitChance) {
+        this(gold, maxHp, atk, healingPower, remainingItemUses, hitChance, 70,
+                10);
     }
 
     /**
      * Instantiates a new Player.
      *
-     * @param maxHp             the max hp
-     * @param atk               the atk
-     * @param healingPower      the healing power
-     * @param remainingItemUses the remaining item uses
-     * @param hitChance         the hit chance
-     * @param maxAp             the max ap
-     * @param apRegen           the ap regen
+     * @param maxHp
+     *            the max hp
+     * @param atk
+     *            the atk
+     * @param healingPower
+     *            the healing power
+     * @param remainingItemUses
+     *            the remaining item uses
+     * @param hitChance
+     *            the hit chance
+     * @param maxAp
+     *            the max ap
+     * @param apRegen
+     *            the ap regen
      */
-    public Player(int gold, int maxHp, int atk, int healingPower, int remainingItemUses, double hitChance, int maxAp, int apRegen) {
+    public Player(int gold, int maxHp, int atk, int healingPower,
+            int remainingItemUses, double hitChance, int maxAp, int apRegen) {
         super(gold, maxHp, atk, hitChance);
         this.healingPower = healingPower;
+
         this.remainingItemUses = remainingItemUses;
         this.maxAp = maxAp;
         this.ap = maxAp;
         this.apRegen = apRegen;
     }
 
+    public boolean save(String path) {
+        // createNewFile("src/player.csv");
+        System.out.println("hier!");
+        // int g = getGold();
+        // int h = getHp();
+        // int r = getRemainingItemUses();
+        //
+        // String data = g + ";" + h + ";" + r;
+        //
+        // try {
+        // FileWriter writer = new FileWriter("src/player.csv");
+        // writer.append(data);
+        // System.out.println("gespeichert!");
+        // } catch (IOException e) {
+        //
+        // e.printStackTrace();
+        // System.out.println("Fehler!");
+        // }
+        try {
+            ObjectOutputStream oos = new ObjectOutputStream(
+                    new FileOutputStream(path));
+            oos.writeObject(this);
+            oos.close();
+
+            return true;
+        } catch (IOException e) {
+            return false;
+        }
+
+    }
+
+    public void createNewFile(String name) {
+
+    }
+
+    public static Player load(String path) throws Exception {
+        // int lineNumber = 0;
+        // try {
+        // BufferedReader br = Files.newBufferedReader(Paths
+        // .get("src/player.csv"));
+        //
+        // String line = null;
+        // String cvsSplitBy = ";";
+        // String[] zeile = line.split(cvsSplitBy);
+        // setGold(Integer.parseInt(zeile[0]));
+        // setHp(Integer.parseInt(zeile[1]));
+        // setRemainingItemUses(Integer.parseInt(zeile[3]));
+        // } catch (IOException e) {
+        // // TODO Auto-generated catch block
+        // e.printStackTrace();
+        // }
+        ObjectInputStream ois = new ObjectInputStream(new FileInputStream(path));
+        Object o = ois.readObject();
+        ois.close();
+
+        if (o instanceof Player)
+            return (Player) o;
+        else
+            throw new Exception("Geh weg!");
+
+    }
+
+//    private void setRemainingItemUses(int amount) {
+//        remainingItemUses = amount;
+//
+//    }
+
     /**
      * Gets remaining item uses.
      *
      * @return the remaining item uses
      */
-    
+
     public int getRemainingItemUses() {
         return remainingItemUses;
     }
@@ -125,13 +217,15 @@ public class Player extends Character {
      * @return the string
      */
     public String toString() {
-        return String.format("Spieler -- HP %d -- ATK %d -- AP %d%n", getHp(), getAtk(), ap);
+        return String.format("Spieler -- HP %d -- ATK %d -- AP %d%n", getHp(),
+                getAtk(), ap);
     }
 
     /**
      * Use ap.
      *
-     * @param cost the cost
+     * @param cost
+     *            the cost
      * @return true, wenn die AP erfolgreich verbraucht wurden
      */
     private boolean useAp(int cost) {
@@ -146,7 +240,8 @@ public class Player extends Character {
     /**
      * Hard hit.
      *
-     * @param m the enemy
+     * @param m
+     *            the enemy
      * @return the damage
      */
     public int hardHit(Character m) {
@@ -156,7 +251,9 @@ public class Player extends Character {
             // 2-facher bis 4-facher Schaden
             int damage = (int) (getAtk() * (Math.random() * 2.0 + 2.0));
             damage = m.takeDamage(damage, ATTACK_SPECIAL);
-            this.takeDamage((int) (HARD_HIT_SELF_DAMAGE_PERCENT / 100.0 * damage), ATTACK_SPECIAL);
+            this.takeDamage(
+                    (int) (HARD_HIT_SELF_DAMAGE_PERCENT / 100.0 * damage),
+                    ATTACK_SPECIAL);
             return damage;
         }
     }
@@ -164,7 +261,8 @@ public class Player extends Character {
     /**
      * Fireball int.
      *
-     * @param m the enemy
+     * @param m
+     *            the enemy
      * @return the damage
      */
     public int fireball(Character m) {
@@ -192,8 +290,5 @@ public class Player extends Character {
             return true;
         }
     }
-
-
-	
 
 }

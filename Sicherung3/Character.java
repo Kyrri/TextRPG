@@ -11,8 +11,8 @@ public class Character {
 	/** The Hit chance. */
 	private double			      hitChance;
 	private int 			      ratio;
-	private AVLTree<Item>         inventory;
-	private AVLTree<Quest>        questLog;
+	private LinkedList<Item>      inventory;
+	private LinkedList<Quest>     questLog;
 	
 	private Item currentItem;
 	private String name;
@@ -34,15 +34,15 @@ public class Character {
 		this.hitChance = hitChance;
 		this.gold = gold;
 		this.currentItem = null;
-		this.inventory = new AVLTree<Item>();
-        this.questLog = new AVLTree<Quest>();
+		this.inventory = new LinkedList<Item>();
+        this.questLog = new LinkedList<Quest>();
 	}
 	public Character(String name, int gold, int ratio){
 		this.setName(name);
 		this.gold = gold;
 		this.ratio = ratio;
-		this.inventory = new AVLTree<Item>();
-        this.questLog = new AVLTree<Quest>();
+		this.inventory = new LinkedList<Item>();
+        this.questLog = new LinkedList<Quest>();
 		
 	}
 	
@@ -145,7 +145,7 @@ public class Character {
 		}
 	}
 	//Inventory methods
-	public AVLTree<Item> getInventory() {
+	public LinkedList<Item> getInventory() {
 		return inventory;
 	}
 	
@@ -158,7 +158,10 @@ public class Character {
     }
 	
 	public Item getItem(String name) {
-	    return inventory.getItemByName(name);
+	        int i = inventory.indexInList(name);
+			Item it = (Item)inventory.getItem(i);
+			if (it.getName().equals(name)) { return it; }
+		return null;
 	}
 	/**
 	 * 
@@ -232,29 +235,28 @@ public class Character {
 	}
 	
 	//Questlog methods
-    public AVLTree<Quest> getQuests(){
+    public LinkedList<Quest> getQuests(){
         return questLog;
     }
-
-    public int getActiveQuests() {
+    public int getActiveQuests(){
         return questLog.length();
     }
     public void addToQuests(Quest i){
-        questLog.insert(i);
+        questLog.append(i);
     }
-
+    
     /**
      * 
      *  
      */
     public int checkQuest(){
-       String[] finishedQuest = this.questLog.checkQuest(inventory);
-       if(finishedQuest[0]==null){
+       int[] finishedQuest = this.questLog.checkQuest(inventory);
+       if(finishedQuest[0]==-1){
            return 0;
        }
        else{
-           Item compare = inventory.getItemByName(finishedQuest[0]);
-           for(int i = 0; i< Integer.parseInt(finishedQuest[1]); i++){
+           Item compare = inventory.getItem(finishedQuest[0]);
+           for(int i = 0; i< finishedQuest[1]; i++){
               inventory.delete(compare);
            }
            return 1;

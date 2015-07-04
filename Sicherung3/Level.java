@@ -7,133 +7,119 @@ import java.util.Scanner;
 /** The type Level. */
 public class Level {
 
-    /** The constant ATKBONUS. */
-    private static final int ATKBONUS = 10;
-    /** The Map data. */
-    private char[][] mapData;
-    /** The constant PLAIN. */
-    public static final char PLAIN = '.';
-    /** The constant PLAYER_CHAR. */
-    public static final char PLAYER_CHAR = 'P';
-    /** The constant FOUNTAIN. */
-    public static final char FOUNTAIN = 'O';
-    /** The constant SMITHY. */
-    public static final char SMITHY = 'T';
-    /** The constant BATTLE. */
-    public static final char BATTLE = 'B';
-    /** The constant GOAL. */
-    public static final char GOAL = 'Z';
-    /** The constant START. */
-    public static final char START = 'S';
-    /** The constant Merchant */
-    public static final char MERCHANT = 'H';
-    /** The constant QUESTGIVER. */
-    public static final char QUESTGIVER = 'Q';
-    /** The Player x coordinate. */
-    private int playerX;
-    /** The Player y coordinate. */
-    private int playerY;
+	/** The constant ATKBONUS. */
+	private static final int	ATKBONUS	= 10;
+	/** The Map data. */
+	private char[][]			mapData;
+	/** The constant PLAIN. */
+	public static final char	PLAIN		= '.';
+	/** The constant PLAYER_CHAR. */
+	public static final char	PLAYER_CHAR	= 'P';
+	/** The constant FOUNTAIN. */
+	public static final char	FOUNTAIN	= 'O';
+	/** The constant SMITHY. */
+	public static final char	SMITHY		= 'T';
+	/** The constant BATTLE. */
+	public static final char	BATTLE		= 'B';
+	/** The constant GOAL. */
+	public static final char	GOAL		= 'Z';
+	/** The constant START. */
+	public static final char	START		= 'S';
+	/** The constant Merchant*/
+	public static final char	MERCHANT	= 'H';
+	/** The constant QUESTGIVER. */
+    public static final char    QUESTGIVER  = 'Q';
+	/** The Player x coordinate. */
+	private int					playerX;
+	/** The Player y coordinate. */
+	private int					playerY;
+	
+	public static Item[]        possibleItems;
+	private Quest[]             possibleQuests;
+	private int                 questIndex;
+	
+	private boolean				inventoryShown;
+	private int                 TOTALQUESTS;
+    private int                 completedQuests;
+    private boolean             canExit;
 
-    public static Item[] possibleItems;
-    private Quest[] possibleQuests;
-    private int questIndex;
-    
-    private Player loadedPlayer;
-    
-    private boolean inventoryShown;
-    private int TOTALQUESTS;
-    private int completedQuests;
-    private boolean canExit;
-
-    /**
-     * Instantiates a new Level.
-     *
-     * @param mapData
-     *            the map data
-     */
-    public Level(char[][] mapData) {
-        if (mapData.length < 3 || mapData[0].length < 3) {
-            throw new IllegalArgumentException("Invalid Map Data");
-        }
-        this.mapData = mapData;
-        if (!findStart()) {
-            throw new IllegalArgumentException(
-                    "Invalid Map Data: No starting position");
-        }
-        try {
-            this.readGame();
-            this.readIn();
-            
-        } catch (IOException e) {
-            System.out.println("Failure to read CSVs, no items or quests exist");
-        }
-        inventoryShown = false;
+	/** Instantiates a new Level.
+	 *
+	 * @param mapData the map data */
+	public Level(char[][] mapData){
+		if (mapData.length < 3 || mapData[0].length < 3) { throw new IllegalArgumentException("Invalid Map Data"); }
+		this.mapData = mapData;
+		if (!findStart()) { throw new IllegalArgumentException("Invalid Map Data: No starting position"); }
+		try{
+		    this.readIn();
+		}catch(IOException e){
+		    System.out.println("Failure to read CSVs, no items or quests exist");
+		}
+		inventoryShown = false;
         completedQuests = 0;
         questIndex = 0;
         canExit = false;
-    }
-
-    private void readIn() throws IOException {
-        System.out.println("Datei laden oder Standardwerte benutzen");
-
+	}
+	private void readIn() throws IOException{
+	    System.out.println("Datei laden oder Standardwerte benutzen");
+        
         /**
          * Abfragen ob eingelesen werden soll
          */
-        int action = abfrageVorlage();
+        int action = abfrage();
         // Einlesen des ITEM.CSV Files
-        if (action == 1) {
+        if(action == 1){
             int lineNumber = 0;
-            BufferedReader br = Files.newBufferedReader(Paths
-                    .get("src/item.csv"));
+            BufferedReader br = Files.newBufferedReader(Paths.get("src/item.csv")); 
             String line = null;
             String cvsSplitBy = ",";
-            Item[] storeItems= new Item[100];
-
+            LinkedList<Item> tempItem = new LinkedList<Item>();
             int countItem = 0;
-
-            while ((line = br.readLine()) != null) {
-
-                lineNumber++;
-                if (lineNumber > 1) {
-                    // line = line.replace(',', '.');
-                    // System.out.println(line);
-                    String[] zeile = line.split(cvsSplitBy);
-
-                    if (line.trim().length() == 0) {
-                        continue; // Skip blank lines
-                    }
-
-                    String name = zeile[0];
-
-                    int value = (int) Double.parseDouble(zeile[1]);
-                    int weight = (int) Double.parseDouble(zeile[2]);
-                    Item item = new Item(name.trim(), value, weight);
-                    storeItems[countItem] = item;
-                    countItem++;
-                }
-            }
-            possibleItems = new Item[countItem];
-            for(int i=0; i<countItem; i++){
-                possibleItems[i] = storeItems[i];
-            }
-
-            // Einlesen des QUEST Files
-            lineNumber = 0;
-            countItem = 0;
-            br = Files.newBufferedReader(Paths.get("src/quest.csv"));
-            line = null;
-            Quest tempQuest[] = new Quest[100];
             
             while ((line = br.readLine()) != null){
                 
                 lineNumber++;
                 if (lineNumber > 1) {
-                    // line = line.replace(',', '.');
-                    // System.out.println(line);
-
-                    if (line.trim().length() == 0) {
-                        continue; // Skip blank lines
-                    }
+                    //line = line.replace(',', '.');
+                   // System.out.println(line);
+                    String[] zeile = line.split(cvsSplitBy);
+                    
+                    if ( line.trim().length() == 0 ) {
+                        continue;  // Skip blank lines
+                      }
+                    
+                    String name = zeile[0]; 
+                    
+                    int value = (int) Double.parseDouble(zeile[1]);
+                    int weight = (int) Double.parseDouble(zeile[2]);
+                    Item item = new Item(name.trim(), value, weight);
+                    tempItem.append(item);
+                    countItem++;
+                }
+            }
+            possibleItems = new Item[countItem];
+            Object[] storeItems = tempItem.toArray(countItem);
+            for(int i=0; i<storeItems.length; i++){
+                possibleItems[i] = (Item)storeItems[i];
+            }
+            
+            // Einlesen des QUEST Files
+            lineNumber = 0;
+            countItem = 0;
+            br = Files.newBufferedReader(Paths.get("src/quest.csv")); 
+            line = null;
+            LinkedList<Quest> tempQuest = new LinkedList<Quest>();
+            
+            while ((line = br.readLine()) != null){
+                
+                lineNumber++;
+                if (lineNumber > 1) {
+                    //line = line.replace(',', '.');
+                    //System.out.println(line);
+                    
+                    if ( line.trim().length() == 0 ) {
+                        continue;  // Skip blank lines
+                      }
                     String[] zeile = line.split(cvsSplitBy);
                     String name = zeile[0];
                     String prequest = zeile[1];
@@ -141,145 +127,99 @@ public class Level {
                     int quatity = (int) Double.parseDouble(zeile[3]);
                     
                     Quest quest = new Quest(name.trim(), prequest.trim(), item.trim(), quatity);
-                    tempQuest[countItem] = quest;
+                    tempQuest.append(quest);
                     countItem++;
                 }
             }
               possibleQuests = new Quest[countItem];
-              for(int i=0; i<countItem; i++){
-                  possibleQuests[i] = tempQuest[i];
+              Object[] storeQuests = tempQuest.toArray(countItem);
+              for(int i=0; i<storeQuests.length; i++){
+                  possibleQuests[i] = (Quest)storeQuests[i];
               }
               TOTALQUESTS = possibleQuests.length;      
         }
 	}
-    private  void readGame(){
-        System.out.println("Vorheriges Spiel spielen oder neues Spiel beginnen");
-        int action = abfrageLaden();
-        if(action == 1){
-            try {
-//                AVLTree.load("liste.ser");
-                loadedPlayer = Player.load("player.ser");
-            } catch (Exception e) {
-                
-                e.printStackTrace();
-            }
-            
-        }
-        if(action==2){
-            
-        }
-    }
-    
-    public Player getPlayer() {
-        return loadedPlayer == null ? new Player() : loadedPlayer;
-    }
-
-    /**
-     * 
-     * @return gewünschte Option ob einlesen oder nicht einlesen
-     */
-    private static int abfrageVorlage() {
-        System.out.println("1 für Gegenstände und Quests laden");
+	/**
+	 * 
+	 * @return gewünschte Option ob einlesen oder nicht einlesen
+	 */
+	private static int abfrage(){
+        System.out.println("1 für Datei laden");
         System.out.println("2 für Standardwerte");
         Scanner sc = new Scanner(System.in);
-        //System.out.println("Hallo!");
         String eingabe = sc.nextLine();
+        if (eingabe.equals("1")){
+            return 1;
+        } else if (eingabe.equals("2")){
+            return 2;
+        } else {
+            System.out.println("Ungültige Eingabe");
+            abfrage();
+            return 0;
+        }
         
-        if (eingabe.equals("1")) {
-            return 1;
-        } else if (eingabe.equals("2")) {
-            return 2;
-        } else {
-            System.out.println("Ungültige Eingabe");
-            abfrageVorlage();
-            return 0;
-        }
+    }
+	public Object[] getPossibleQuests(){
+	    return possibleQuests;
+	}
 
-    }
-    public Object[] getPossibleQuests(){
-        return possibleQuests;
-    }
-    
-    /**
-     * Find start.
-     *
-     * @return true, wenn die Startposition gefunden wuerde
-     */
-    private boolean findStart() {
-        for (int y = 0; y < mapData.length; y++) {
-            for (int x = 0; x < mapData[0].length; x++) {
-                if (mapData[y][x] == START) {
-                    playerX = x;
-                    playerY = y;
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
+	/** Find start.
+	 *
+	 * @return true, wenn die Startposition gefunden wuerde */
+	private boolean findStart() {
+		for (int y = 0; y < mapData.length; y++) {
+			for (int x = 0; x < mapData[0].length; x++) {
+				if (mapData[y][x] == START) {
+					playerX = x;
+					playerY = y;
+					return true;
+				}
+			}
+		}
+		return false;
+	}
 
-    /**
-     * To string.
-     *
-     * @return the string
-     */
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        for (int y = 0; y < mapData.length; ++y) {
-            for (int x = 0; x < mapData[0].length; ++x) {
-                if (y == playerY && x == playerX) {
-                    sb.append(PLAYER_CHAR);
-                } else {
-                    sb.append(mapData[y][x]);
-                }
-            }
-            sb.append("\n");
-        }
-        return sb.toString();
-    }
+	/** To string.
+	 *
+	 * @return the string */
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		for (int y = 0; y < mapData.length; ++y) {
+			for (int x = 0; x < mapData[0].length; ++x) {
+				if (y == playerY && x == playerX) {
+					sb.append(PLAYER_CHAR);
+				} else {
+					sb.append(mapData[y][x]);
+				}
+			}
+			sb.append("\n");
+		}
+		return sb.toString();
+	}
 
-    private static int abfrageLaden() {
-        System.out.println("1 für alte Spielwerte");
-        System.out.println("2 für neues Spiel");
-        Scanner sc = new Scanner(System.in);
-        String eingabe = sc.nextLine();
-//        
-        if (eingabe.equals("1")) {
-            return 1;
-        } else if (eingabe.equals("2")) {
-            return 2;
-        } else {
-            System.out.println("Ungültige Eingabe");
-            abfrageLaden();
-            return 0;
-        }
-
-    }
-    /**
-     * Can move.
-     *
-     * @param c
-     *            the direction
-     * @return true, wenn die Richtung möglich ist
-     */
-    public boolean canMove(char c) {
-        switch (c) {
-        case 'n':
-            return canMoveUp();
-        case 's':
-            return canMoveDown();
-        case 'o':
-            return canMoveRight();
-        case 'w':
-            return canMoveLeft();
-        default:
-            return false;
-        }
-    }
-    public boolean showInventory(char c) {
-        return c == 'i';
-    }
-    public boolean showQuests(char c){
+	/** Can move.
+	 *
+	 * @param c the direction
+	 * @return true, wenn die Richtung möglich ist */
+	public boolean canMove(char c) {
+		switch (c) {
+			case 'n':
+				return canMoveUp();
+			case 's':
+				return canMoveDown();
+			case 'o':
+				return canMoveRight();
+			case 'w':
+				return canMoveLeft();
+			default:
+				return false;
+		}
+	}
+	
+	public boolean showInventory(char c) {
+		return c == 'i';
+	}
+	public boolean showQuests(char c){
         return c == 'l';
     }
 
@@ -449,7 +389,7 @@ public class Level {
                               }
 	                      }
 	                      else{
-	                          System.out.println("Du musst zuerst die Bedingung '" + q.getPreReqs() + "' f�r eine neue Quest erfüllen haben.");
+	                          System.out.println("Du musst zuerst die Bedingung '" + q.getPreReqs() + "' erfüllen.");
 	                      }
 	                       
 	                  }
@@ -469,20 +409,21 @@ public class Level {
 			    if(canExit){
                     System.out.println("Herzlichen Glückwunsch! Sie haben gewonnen!");
                     System.exit(0); 
-			    }
+                }
                 else{
                     System.out.println("Du musst zuerst alle Quests erfüllen, bevor du gewinnst"); 
                 }
-            break;
-        }
-        clearField();
-    }              
+			break;
+		}
+		clearField();
+	}
 
 	/** Random monster.
 	 *
 	 * @return the monster */
 	private static Monster randomMonster() {
 		Monster[] monsterFarm = { new Monster(), new ResistantMonster(), new WaitingMonster() };
+
 		double bucketSize = 1.0 / monsterFarm.length;
 		double bucket = Math.random() / bucketSize;
 		int selectedMonster = (int) Math.floor(bucket);
@@ -546,13 +487,14 @@ public class Level {
 	private void buyItem(Player p, Merchant h){
 		
 		inventoryShown = true;
-		AVLTree<Item> inv = h.getInventory();
+		LinkedList inv = h.getInventory();
 		
 		System.out.println("Angebot von "+h.getName()+" :");
 		System.out.println("#########################");
+		for (int i = 0; i < inv.length(); i++) {
+			System.out.println(i + ".) " + inv.printItem(i));
+		}
 		
-		inv.printItems();
-
 		int article = askArticleNumber(inv.length());
 		h.getItem(article);
 		System.out.println(h.getVerkaufspreis(article));
@@ -572,9 +514,10 @@ public class Level {
 			System.out.println("Dein Inventar");
 			System.out.println("#########################");
 			inv = p.getInventory();
-
-			inv.printItems();
 			
+			for (int i = 0; i < inv.length(); i++) {
+				System.out.println(i + ".) " + inv.printItem(i));
+			}
 		} else {
 			System.out.println("Nicht genung Finanzreservern");
 		}
@@ -584,12 +527,13 @@ public class Level {
 	private void sellItem(Player p, Merchant h){
 		
 		inventoryShown = true;
-		AVLTree<Item> inv = p.getInventory();
+		LinkedList inv = p.getInventory();
 		
 		System.out.println("Dein Inventar :");
 		System.out.println("#########################");
-		
-		inv.printItems();
+		for (int i = 0; i < inv.length(); i++) {
+			System.out.println(i + ".) " + inv.printItem(i));
+		}
 	
 		int article = askArticleNumber(inv.length());
 		p.getItem(article);
@@ -608,7 +552,9 @@ public class Level {
 			System.out.println("#########################");
 			inv = p.getInventory();
 			
-			inv.printItems();
+			for (int i = 0; i < inv.length(); i++) {
+				System.out.println(i + ".) " + inv.printItem(i));
+			}
 		} else {
 			System.out.println("Händler hat nicht genügend Geld");
 		}
@@ -636,7 +582,7 @@ public class Level {
 	 *
 	 * @param p the p */
 	public void startBattle(Player p) {
-	    Character m = randomMonster();
+        Character m = randomMonster();
 
         Scanner sc = new Scanner(System.in);
         
@@ -703,22 +649,22 @@ public class Level {
                     }
                     break;
                 case "6":
-                    showInventory(p);
-                    break;
+                	showInventory(p);
+                	break;
                 case "7":
-                    if (inventoryShown) {
-                        String s = sc.nextLine();
-                        try {
-                            System.out.println("Wähle ein Item aus (0 - " + (p.getInventory().length() - 1) + "):");
-                            //chooseInventory(p, Integer.parseInt(s));
-                        } catch (Exception e) {
-                            System.out.println("Das ist was falsch gelaufen ... Eingabe ignoriert.");
-                        }
-                    } else {
-                        System.out.println("Kann kein Item auswählen.");
-                    }
-                    inventoryShown = false;
-                    break;
+                	if (inventoryShown) {
+                		String s = sc.nextLine();
+                		try {
+                			System.out.println("Wähle ein Item aus (0 - " + (p.getInventory().length() - 1) + "):");
+                			chooseInventory(p, Integer.parseInt(s));
+                		} catch (Exception e) {
+                			System.out.println("Das ist was falsch gelaufen ... Eingabe ignoriert.");
+                		}
+                	} else {
+                		System.out.println("Kann kein Item auswählen.");
+                	}
+                	inventoryShown = false;
+                	break;
                 default:
                     System.out.println("Fehlerhafte Aktion!");
                     continue;
@@ -730,12 +676,9 @@ public class Level {
             } else if (m.isDefeated()) {
                 System.out.println("Spieler gewinnt!");
                 p.addMoreGold(m.getGold());
-                AVLTree<Item> mInv = m.getInventory();
-                int length = mInv.length();
-                for (int i = 0; i < length; i++) {
-                    Item temp = mInv.firstItem();
-                    p.addToInventory(temp);
-                    mInv.delete(temp);
+                LinkedList<Item> mInv = m.getInventory();
+                for (int i = 0; i < mInv.length(); i++) {
+                	p.addToInventory(mInv.getItem(i));
                 }
                 break;
             }
@@ -765,51 +708,51 @@ public class Level {
         }
     }
 
-    private void chooseInventory(Player p, int index) {
-        if (index >= p.getInventory().length()) {
-            System.out.println("Sorry, Item existiert nicht.");
-            return;
-        }
-        p.setCurrentItem(p.getInventory().getItem(index));
-    }
-
 	public void showInventory(Player p) {
 		inventoryShown = true;
-		AVLTree<Item> inv = p.getInventory();
+		LinkedList inv = p.getInventory();
 		System.out.println("Dein Inventar umfasst: ");
-		inv.printItems();
+		for (int i = 0; i < inv.length(); i++) {
+			System.out.println(i + ".) " + inv.printItem(i) );
+		}
 	}
 	
 	//Inventory
 	public void showInventory(Merchant h, Player p) {
 		inventoryShown = true;
-		AVLTree<Item> inv = h.getInventory();
+		LinkedList inv = h.getInventory();
 		//System.out.println("Goldreserve von "+h.getGold()+" :");
 		//System.out.println("Ratio "+h.getRatio()+" :");
 		System.out.println("Angebot von "+h.getName()+" :");
 		System.out.println("#########################");
-		inv.printItems();
+		for (int i = 0; i < inv.length(); i++) {
+			System.out.println(i + ".) " + inv.printItem(i));
+		}
 		
 		System.out.println("#########################");
 		System.out.println("Ankaufspreisliste :");
 		inv = p.getInventory();
-		inv.printItems();
+		for (int i = 0; i < inv.length(); i++) {
+			System.out.println(i + ".) " + inv.printItem(i));
+		}
 		
 		
 	}
 	
-//	private void chooseInventory(Player p, int index) {
-//		if (index >= p.getInventory().length()) {
-//			System.out.println("Sorry, Item existiert nicht.");
-//			return;
-//		}
-//		p.setCurrentItem(p.getInventory().getItem(index));
-//	}
+	private void chooseInventory(Player p, int index) {
+		if (index >= p.getInventory().length()) {
+			System.out.println("Sorry, Item existiert nicht.");
+			return;
+		}
+		p.setCurrentItem(p.getInventory().getItem(index));
+	}
 	//Quests
     public void showQuests(Player p){
-        AVLTree<Quest> quests = p.getQuests();
+        LinkedList<Quest> quests = p.getQuests();
         System.out.println("Dein Quests umfasst: ");
-        quests.printItems();
+        for (int i = 0; i < quests.length(); i++) {
+            System.out.println(i + ".) " +quests.printItem(i));
+        }
     }
 
 }
