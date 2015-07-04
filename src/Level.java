@@ -160,8 +160,8 @@ public class Level {
 //                AVLTree.load("liste.ser");
                 loadedPlayer = Player.load("player.ser");
             } catch (Exception e) {
-                
-                e.printStackTrace();
+                System.out.println("keines Spiel gefunden - neues Spiel erstellt");
+                //e.printStackTrace();
             }
             
         }
