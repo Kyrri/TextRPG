@@ -235,14 +235,13 @@ public class Character {
     public AVLTree<Quest> getQuests(){
         return questLog;
     }
-
-    public int getActiveQuests() {
+    public int getActiveQuests(){
         return questLog.length();
     }
     public void addToQuests(Quest i){
         questLog.insert(i);
     }
-
+    
     /**
      * 
      *  

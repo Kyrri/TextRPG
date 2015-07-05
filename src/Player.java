@@ -210,6 +210,12 @@ public class Player extends Character implements Serializable {
         this.ap = Math.min(this.ap + this.apRegen, this.maxAp);
         return this.ap - oldAp;
     }
+    public int getAp(){
+        return this.ap;
+    }
+    public int getMaxAp(){
+        return this.maxAp;
+    }
 
     /**
      * To string.
