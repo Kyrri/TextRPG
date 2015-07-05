@@ -62,17 +62,28 @@ public class BattleSystem extends JFrame implements ActionListener{
         
         //   Labels   //
         //Enemy
-        label = new JLabel("Enemy");
+        label = new JLabel("Genger");
         c.fill = GridBagConstraints.HORIZONTAL;
-        c.ipady = 20;
+        c.ipady = 15;
         c.weightx = 0.5;
-        c.gridwidth=3;
+        c.gridwidth=1;
         c.gridx=0;
         c.gridy=0;
         label.setBorder(BorderFactory.createCompoundBorder(border,paddingBorder));
         label.setOpaque(true);
         label.setBackground(Color.LIGHT_GRAY);
         label.setFont(new Font(labelFont.getName(), Font.BOLD, 16));
+        frame.add(label, c);
+        label = new JLabel("ATK:"+m.getAtk());
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.ipady = 20;
+        c.weightx = 0.5;
+        c.gridwidth=2;
+        c.gridx=1;
+        c.gridy=0;
+        label.setBorder(border);
+        label.setOpaque(true);
+        label.setBackground(Color.LIGHT_GRAY);
         frame.add(label, c);
         enemyHP = new JLabel("HP:"+m.getHp()+"/"+m.getMaxHp());
         c.fill = GridBagConstraints.HORIZONTAL;
@@ -123,7 +134,7 @@ public class BattleSystem extends JFrame implements ActionListener{
         
         
         //Player
-        label = new JLabel("Player", SwingConstants.RIGHT);
+        label = new JLabel("Spieler", SwingConstants.RIGHT);
         c.fill = GridBagConstraints.HORIZONTAL;
         c.ipady = 15;
         c.weightx = 0.5;
