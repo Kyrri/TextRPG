@@ -27,6 +27,10 @@ public class Character {
 	 * @param maxHp the max hp
 	 * @param atk the atk
 	 * @param hitChance the hit chance */
+	public Character(){
+	    
+	}
+	
 	public Character(int gold, int maxHp, int atk, double hitChance) {
 		this.maxHp = maxHp;
 		this.hp = maxHp;

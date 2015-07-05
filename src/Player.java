@@ -110,7 +110,7 @@ public class Player extends Character implements Serializable {
 
     public boolean save(String path) {
         // createNewFile("src/player.csv");
-        System.out.println("hier!");
+        System.out.println("fast fertig gespeichert");
         // int g = getGold();
         // int h = getHp();
         // int r = getRemainingItemUses();
@@ -130,10 +130,12 @@ public class Player extends Character implements Serializable {
             ObjectOutputStream oos = new ObjectOutputStream(
                     new FileOutputStream(path));
             oos.writeObject(this);
+            System.out.println("und geschafft");
             oos.close();
 
             return true;
         } catch (IOException e) {
+            System.out.println("nee doch nicht");
             return false;
         }
 
@@ -144,6 +146,7 @@ public class Player extends Character implements Serializable {
     }
 
     public static Player load(String path) throws Exception {
+        System.out.println("Test!");
         // int lineNumber = 0;
         // try {
         // BufferedReader br = Files.newBufferedReader(Paths
@@ -160,12 +163,16 @@ public class Player extends Character implements Serializable {
         // e.printStackTrace();
         // }
         ObjectInputStream ois = new ObjectInputStream(new FileInputStream(path));
+        System.out.println("hier bin ich noch");
         Object o = ois.readObject();
+        System.out.println("hier auch!");
         ois.close();
-
-        if (o instanceof Player)
+        System.out.println("Fast Fertig geladen!");
+        if (o instanceof Player){
+            System.out.println("Erfolg!");
             return (Player) o;
-        else
+        } else
+            System.out.println("Verdammt fehlgeschlagen!");
             throw new Exception("Geh weg!");
 
     }

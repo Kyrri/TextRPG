@@ -37,6 +37,7 @@ public class Level {
     public static Item[] possibleItems;
     private Quest[] possibleQuests;
     private int questIndex;
+    Player p = new Player();
     
     private Player loadedPlayer;
     
@@ -158,10 +159,12 @@ public class Level {
         if(action == 1){
             try {
 //                AVLTree.load("liste.ser");
-                loadedPlayer = Player.load("player.ser");
+                System.out.println("Ich bin hier");
+                loadedPlayer = Player.load("src/player.ser");
+                
             } catch (Exception e) {
-                System.out.println("keines Spiel gefunden - neues Spiel erstellt");
-                //e.printStackTrace();
+                System.out.println("keine Spiel gefunden - neues Spiel erstellt");
+                e.printStackTrace();
             }
             
         }
@@ -375,25 +378,26 @@ public class Level {
 	}
 
 	/** Show prompt. */
-	public void showPrompt() {
-		System.out.println("------------------------------");
-		if (canMoveUp()) {
-			System.out.println("n -> Norden");
-		}
-		if (canMoveDown()) {
-			System.out.println("s -> Sueden");
-		}
-		if (canMoveRight()) {
-			System.out.println("o -> Osten");
-		}
-		if (canMoveLeft()) {
-			System.out.println("w -> Westen");
-		}
-		System.out.println("------------------------------");
-		System.out.println("i -> Zeige Inventar");
-		System.out.println("l -> Questlog");
-		System.out.print("Richtung? ");
-	}
+	 public void showPrompt() {
+	        System.out.println("------------------------------");
+	        if (canMoveUp()) {
+	            System.out.println("n -> Norden");
+	        }
+	        if (canMoveDown()) {
+	            System.out.println("s -> Sueden");
+	        }
+	        if (canMoveRight()) {
+	            System.out.println("o -> Osten");
+	        }
+	        if (canMoveLeft()) {
+	            System.out.println("w -> Westen");
+	        }
+	        System.out.println("------------------------------");
+	        System.out.println("i -> Zeige Inventar");
+	        System.out.println("l -> Questlog");
+	        System.out.println("1 -> Speichern");
+	        System.out.print("Richtung? / Aktion");
+	    }
 
 	/** Gets field.
 	 *
@@ -449,7 +453,7 @@ public class Level {
                               }
 	                      }
 	                      else{
-	                          System.out.println("Du musst zuerst die Bedingung '" + q.getPreReqs() + "' f�r eine neue Quest erfüllen haben.");
+	                          System.out.println("Du musst zuerst die Bedingung '" + q.getPreReqs() + "' f�r eine neue Quest erfüllen haben.");
 	                      }
 	                       
 	                  }

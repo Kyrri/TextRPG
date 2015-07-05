@@ -35,7 +35,7 @@ public class Crawler {
                 if (direction == '1') {
                     System.out.println("hier1");
                     // LinkedList.save("liste.ser");
-                    p.save("player.ser");
+                    p.save("src/player.ser");
                 } else if (m.showQuests(direction)) {
                     m.showQuests(p);
                 } else if (!m.canMove(direction)) {
