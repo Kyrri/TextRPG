@@ -59,10 +59,10 @@ public class Player extends Character implements Serializable {
         this(200, 130, 20, 70, 3, 0.8);
     }
     
-    public Player(String name, int HP, int ATK, int AP){
-        
-        this(name, HP, ATK, ap);
-    }
+//    public Player(String name, int HP, int ATK, int AP){
+//        
+//        this(name, HP, ATK, ap);
+//    }
 
     /**
      * Instantiates a new Player.
