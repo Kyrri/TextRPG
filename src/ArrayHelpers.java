@@ -34,20 +34,20 @@ public class ArrayHelpers {
         return changed;
     }
 
-    /**
-     * In int [ ].
-     *
-     * @param x das Array
-     * @param n das zu findene Element
-     * @return true wenn das Element n im Array x ist sonst false
-     */
-    private static boolean in(int[] x, int n) {
-        for (int i : x) {
-            if (i == n) {
-                return true;
-            }
-        }
-        return false;
-    }
+//    /**
+//     * In int [ ].
+//     *
+//     * @param x das Array
+//     * @param n das zu findene Element
+//     * @return true wenn das Element n im Array x ist sonst false
+//     */
+//    private static boolean in(int[] x, int n) {
+//        for (int i : x) {
+//            if (i == n) {
+//                return true;
+//            }
+//        }
+//        return false;
+//    }
 
 }
