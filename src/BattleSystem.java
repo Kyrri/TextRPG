@@ -18,6 +18,10 @@ public class BattleSystem extends JFrame implements ActionListener{
     JLabel playerAP;
     JLabel playerAtt;
     JButton healItemUses;
+    JButton attack;
+    JButton hs;
+    JButton fb;
+    JButton ak;
     JLabel enemyHP;
     JLabel prevMessage1;
     JLabel prevMessage2;
@@ -181,18 +185,27 @@ public class BattleSystem extends JFrame implements ActionListener{
         playerHP.setBorder(paddingBorder);
         frame.add(playerHP, c);
         
-        //   Buttons   //
-        button = new JButton("Angriff");
+   //   Buttons   //
+        /*
+         * Angriff
+         */
+        
+        attack = new JButton("Angriff");
         c.fill = GridBagConstraints.HORIZONTAL;
         c.ipady = 0;
         c.weightx = 0.5;
         c.gridwidth=1;
         c.gridx=0;
         c.gridy=5;
-        button.addActionListener(this);
-        button.setActionCommand("attack");
-        button.setBackground(Color.LIGHT_GRAY);
-        frame.add(button, c);
+        attack.addActionListener(this);
+        attack.setActionCommand("attack");
+        attack.setBackground(Color.LIGHT_GRAY);      
+        frame.add(attack, c);
+ 
+        /**
+         * Heilen
+         */
+        
         healItemUses = new JButton("Heals - Nutzen:" + p.getRemainingItemUses());
         c.weightx = 0.5;
         c.gridwidth=1;
@@ -203,39 +216,53 @@ public class BattleSystem extends JFrame implements ActionListener{
         healItemUses.setBackground(Color.LIGHT_GRAY);
         healItemUses.setFocusPainted(false);
         frame.add(healItemUses, c);
-        button = new JButton("ATK auswürfeln - AP:" + Player.REROLL_COST);
+        
+        /**
+         * ATK auswürfeln
+         */
+        
+        ak = new JButton("ATK auswürfeln - AP:" + Player.REROLL_COST);
         c.fill = GridBagConstraints.HORIZONTAL;
         c.weightx = 0.5;
         c.gridwidth=1;
         c.gridx=2;
         c.gridy=5;
-        button.addActionListener(this);
-        button.setActionCommand("reRoll");
-        button.setBackground(Color.LIGHT_GRAY);
+        ak.addActionListener(this);
+        ak.setActionCommand("reRoll");
+        ak.setBackground(Color.LIGHT_GRAY);
         
-        frame.add(button, c);
-        button = new JButton("Harter Schlag - AP:" + Player.HARD_HIT_COST + " / Selbstschaden:" + Player.HARD_HIT_SELF_DAMAGE_PERCENT+"%");
+        frame.add(ak, c);
+        
+        /**
+         * Harter Schlag
+         */
+        hs = new JButton("Harter Schlag - AP:" + Player.HARD_HIT_COST + " / Selbstschaden:" + Player.HARD_HIT_SELF_DAMAGE_PERCENT+"%");
         c.fill = GridBagConstraints.HORIZONTAL;
         c.weightx = 0.5;
         c.gridwidth=2;
         c.gridx=0;
         c.gridy=6;
-        button.addActionListener(this);
-        button.setActionCommand("hardHit");
-        button.setBackground(Color.LIGHT_GRAY);
+        hs.addActionListener(this);
+        hs.setActionCommand("hardHit");
+        hs.setBackground(Color.LIGHT_GRAY);
         
-        frame.add(button, c);
-        button = new JButton("Feuerball - AP:" + Player.FIREBALL_COST);
+        frame.add(hs, c);
+        
+        /**
+         * Feuerball
+         */
+        
+        fb = new JButton("Feuerball - AP:" + Player.FIREBALL_COST);
         c.fill = GridBagConstraints.HORIZONTAL;
         c.weightx = 0.5;
         c.gridwidth=1;
         c.gridx=2;
         c.gridy=6;
-        button.addActionListener(this);
-        button.setActionCommand("fireBall");
-        button.setBackground(Color.LIGHT_GRAY);
+        fb.addActionListener(this);
+        fb.setActionCommand("fireBall");
+        fb.setBackground(Color.LIGHT_GRAY);
         
-        frame.add(button, c);
+        frame.add(fb, c);
         
         //   Combat Log   //
         prevMessage1 = new JLabel("", SwingConstants.CENTER);
@@ -274,8 +301,7 @@ public class BattleSystem extends JFrame implements ActionListener{
         c.gridy=10;
         prevMessage4.setForeground(Color.WHITE);
         frame.add(prevMessage4, c);
-        
-        
+              
         //Show Frame
         frame.setVisible(true);
         
@@ -295,6 +321,7 @@ public class BattleSystem extends JFrame implements ActionListener{
                 } else {
                     updateText("Spieler trifft und macht Schaden!");
                 }
+                disableButtons();
                 break;
             case "heal":
                 if (p.heal()) {
@@ -308,6 +335,7 @@ public class BattleSystem extends JFrame implements ActionListener{
                 if (playerDamage != -1) {
                     updateText("Spieler schlägt hart zu! Spieler verursacht "+playerDamage+" Schaden!");
                     updateText("Spieler verursacht "+(int) (Player.HARD_HIT_SELF_DAMAGE_PERCENT / 100.0 * playerDamage)+" Selbstschaden!");
+                    disableButtons();
                 } else {
                     updateText("Nicht genügend AP!");
                 }
@@ -316,6 +344,7 @@ public class BattleSystem extends JFrame implements ActionListener{
                 playerDamage = p.fireball(m);
                 if (playerDamage != -1) {
                     updateText("Spieler schießt einen Feuerball!%nSpieler verursacht "+playerDamage+" Schaden!");
+                    disableButtons();
                 } else {
                     updateText("Nicht genügend AP!");
                 }
@@ -324,6 +353,7 @@ public class BattleSystem extends JFrame implements ActionListener{
                 if (p.reroll()) {
                     updateText("ATK neu ausgewürfelt!");
                     playerAtt.setText("ATK:"+p.getAtk());
+                    disableButtons();
                 } else {
                     updateText("Nicht genügend AP!");
                 }
@@ -371,6 +401,22 @@ public class BattleSystem extends JFrame implements ActionListener{
         healItemUses.setText("Heals - Nutzen:" + p.getRemainingItemUses());
         frame.repaint();
         frame.revalidate();
+    }
+    private void disableButtons() {
+        attack.setEnabled(false);
+        fb.setEnabled(false);
+        hs.setEnabled(false);
+        ak.setEnabled(false);
+        updateValues();
+        ButtonDelay buttonDelay = new ButtonDelay(this);       
+        buttonDelay.start();
+    }
+    public void enableButtons(){
+        attack.setEnabled(true);
+        fb.setEnabled(true);
+        hs.setEnabled(true);
+        ak.setEnabled(true); 
+        updateValues();
     }
     public void finishBattle(boolean gameOver){
         playerBattleThread.finish();
