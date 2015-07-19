@@ -24,6 +24,9 @@ public class BattleSystem extends JFrame implements ActionListener{
     JLabel prevMessage3;
     JLabel prevMessage4;
     boolean allowClose = false;
+    
+    PlayerBattleThread playerBattleThread;
+    MonsterBattleThread monsterBattleThread;
 
     public BattleSystem(Player player, Character monster){
         p = player;
@@ -275,12 +278,15 @@ public class BattleSystem extends JFrame implements ActionListener{
         
         //Show Frame
         frame.setVisible(true);
+        
+        playerBattleThread = new PlayerBattleThread(this);
+        monsterBattleThread = new MonsterBattleThread(this);
+        playerBattleThread.start();
+        monsterBattleThread.start();
     }
     public void actionPerformed(ActionEvent arg0) {
         String action = arg0.getActionCommand();
-        boolean skipMonster = false;
         int playerDamage;
-        int monsterDamage;
         switch(action){
             case "attack":
                 playerDamage = p.attack(m);
@@ -295,7 +301,6 @@ public class BattleSystem extends JFrame implements ActionListener{
                     updateText("Spieler heilt sich!");
                 } else {
                     updateText("Nicht genügend Heiltränke!");
-                    skipMonster = true;
                 }
                 break;
             case "hardHit":
@@ -305,7 +310,6 @@ public class BattleSystem extends JFrame implements ActionListener{
                     updateText("Spieler verursacht "+(int) (Player.HARD_HIT_SELF_DAMAGE_PERCENT / 100.0 * playerDamage)+" Selbstschaden!");
                 } else {
                     updateText("Nicht genügend AP!");
-                    skipMonster = true;
                 }
                 break;
             case "fireBall":
@@ -314,7 +318,6 @@ public class BattleSystem extends JFrame implements ActionListener{
                     updateText("Spieler schießt einen Feuerball!%nSpieler verursacht "+playerDamage+" Schaden!");
                 } else {
                     updateText("Nicht genügend AP!");
-                    skipMonster = true;
                 }
                 break;
             case "reRoll":
@@ -323,7 +326,6 @@ public class BattleSystem extends JFrame implements ActionListener{
                     playerAtt.setText("ATK:"+p.getAtk());
                 } else {
                     updateText("Nicht genügend AP!");
-                    skipMonster = true;
                 }
                 break;
             case "gameOver":
@@ -335,14 +337,12 @@ public class BattleSystem extends JFrame implements ActionListener{
                 return;
             default:
                 updateText("Fehlerhafte Aktion!");
-                skipMonster = true;
         }
         if (p.isDefeated()) {
             System.out.println("Game Over!");
             finishBattle(true);
             return;
         } else if (m.isDefeated()) {
-            skipMonster = true;
             System.out.println("Spieler gewinnt!");
             p.addMoreGold(m.getGold());
             AVLTree<Item> mInv = m.getInventory();
@@ -354,23 +354,6 @@ public class BattleSystem extends JFrame implements ActionListener{
             }
             finishBattle(false);
             return;
-        }
-        if(!skipMonster){
-            updateText("Monster greift an!");
-            monsterDamage = m.attack(p);
-            if (monsterDamage == -1) {
-                updateText("Monster verfehlt!");
-            } else if (monsterDamage == -2) {
-                updateText("Monster tut nichts.");
-            } else {
-                updateText("Monster trifft und macht "+monsterDamage+" Schaden!");
-            }
-            if (p.isDefeated()) {
-                System.out.println("Game Over!");
-                finishBattle(true);
-                return;
-            }
-            p.regenerateAp();
         }
         this.updateValues();
 
@@ -390,6 +373,8 @@ public class BattleSystem extends JFrame implements ActionListener{
         frame.revalidate();
     }
     public void finishBattle(boolean gameOver){
+        playerBattleThread.finish();
+        monsterBattleThread.finish();
         JButton end;
         this.frame.getContentPane().removeAll();
         frame.repaint();
